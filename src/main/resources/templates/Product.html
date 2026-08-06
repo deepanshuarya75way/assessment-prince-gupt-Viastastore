@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{base::Layout(~{::main})}">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${product.productName} + ' | Viasta'">Product | Viasta</title>
+</head>
+<body>
+<main>
+
+  <!-- Breadcrumb -->
+  <section class="page-banner" style="padding:40px 0 28px;">
+    <div class="breadcrumb">
+      <a href="/">Home</a> &nbsp;/&nbsp;
+      <a href="/shop">Shop</a> &nbsp;/&nbsp;
+      <span th:text="${product.category != null ? product.category.categoryName : 'Product'}">Category</span>
+      &nbsp;/&nbsp;
+      <span th:text="${product.productName}">Product</span>
+    </div>
+  </section>
+
+  <div class="wrap">
+
+    <!-- Product layout -->
+    <div class="product-layout">
+
+      <!-- LEFT: gallery -->
+      <div class="product-gallery">
+        <div class="product-main-img" id="mainImgWrap">
+          <img id="mainImg"
+               th:src="@{'/ProductImages/' + ${product.productImages.get(0)}}"
+               alt="Product image">
+          <div class="prod-fold" th:if="${product.discount > 0}">
+            <span th:text="${product.discount + '%'}"></span>
+          </div>
+          <div class="product-stock-badge product-stock-out"
+               th:if="${product.status.name() == 'Out_of_Stock'}">
+            Out of Stock
+          </div>
+        </div>
+
+        <div class="product-thumbs" th:if="${#lists.size(product.productImages) > 1}">
+          <button class="product-thumb active"
+                  th:each="img,iter : ${product.productImages}"
+                  th:data-src="@{'/ProductImages/' + ${img}}"
+                  th:classappend="${iter.index == 0} ? 'active' : ''">
+            <img th:src="@{'/ProductImages/' + ${img}}" th:alt="${product.productName}">
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: info -->
+      <div class="product-info">
+
+        <div class="product-meta-top">
+          <span class="eyebrow" style="font-size:11px;" th:text="${product.brandName}">Brand</span>
+          <span class="product-category-tag"
+                th:text="${product.category != null ? product.category.categoryName : ''}"></span>
+        </div>
+
+        <h1 class="product-title" th:text="${product.productName}">Product Name</h1>
+
+        <div class="product-rating">
+          <span class="stars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+          </span>
+          <span class="product-rating-count">4.0 &nbsp;·&nbsp; Premium Quality</span>
+        </div>
+
+        <div class="woven dim" style="margin:18px 0;"></div>
+
+        <!-- Pricing -->
+        <div class="product-price-block">
+          <span class="product-final-price" th:text="'₹' + ${product.finalPrice}">₹0</span>
+          <span class="product-selling-price"
+                th:if="${product.discount > 0}"
+                th:text="'₹' + ${product.sellingPrice}">₹0</span>
+          <span class="product-discount-badge"
+                th:if="${product.discount > 0}"
+                th:text="${product.discount + '% OFF'}">0% OFF</span>
+        </div>
+        <p class="product-tax-note">Inclusive of all taxes</p>
+
+        <!-- Colours -->
+        <div class="product-option-group" th:if="${product.colors != null and !product.colors.isEmpty()}">
+          <div class="product-option-label">
+            Colour: <span id="selectedColour" class="product-option-selected"></span>
+          </div>
+          <div class="product-colour-swatches">
+            <button class="colour-swatch"
+                    th:each="col : ${#strings.arraySplit(product.colors, ',')}"
+                    th:data-colour="${#strings.trim(col)}"
+                    th:style="'background:' + ${#strings.trim(col)}"
+                    th:title="${#strings.trim(col)}">
+            </button>
+          </div>
+        </div>
+
+        <!-- Sizes -->
+        <div class="product-option-group" th:if="${product.sizes != null and !product.sizes.isEmpty()}">
+          <div class="product-option-label">
+            Size: <span id="selectedSize" class="product-option-selected"></span>
+          </div>
+          <div class="product-size-grid">
+            <button class="size-btn"
+                    th:each="sz : ${#strings.arraySplit(product.sizes, ',')}"
+                    th:data-size="${#strings.trim(sz)}"
+                    th:text="${#strings.trim(sz)}">S</button>
+          </div>
+          <a href="#" class="product-size-guide">
+            <i class="fa-solid fa-ruler"></i> Size Guide
+          </a>
+        </div>
+
+        <!-- Quantity -->
+        <div class="product-option-group">
+          <div class="product-option-label">Quantity</div>
+          <div class="product-qty-row">
+            <button class="qty-btn" id="qtyMinus" aria-label="Decrease"><i class="fa-solid fa-minus"></i></button>
+            <span class="qty-value" id="qtyValue">1</span>
+            <button class="qty-btn" id="qtyPlus" aria-label="Increase"><i class="fa-solid fa-plus"></i></button>
+          </div>
+        </div>
+
+        <!-- CTAs -->
+        <div class="product-ctas">
+          <a class="btn btn-gold product-cta-main"
+             th:if="${product.status.name() == 'Available'}"
+             th:href="@{'/cart/add/' + ${product.id}}"
+             id="addToCartBtn">
+            <i class="fa-solid fa-bag-shopping"></i> Add to Cart
+          </a>
+          <button class="btn btn-gold product-cta-main" disabled
+                  th:if="${product.status.name() == 'Out_of_Stock'}">
+            <i class="fa-solid fa-ban"></i> Out of Stock
+          </button>
+          <button class="btn btn-outline product-cta-wish" id="wishBtn" aria-label="Wishlist">
+            <i class="fa-regular fa-heart"></i>
+          </button>
+        </div>
+
+        <!-- Flash -->
+        <div class="product-flash" id="productFlash"
+             th:style="${msg != null and msg != ''} ? 'display:block' : 'display:none'"
+             th:text="${msg != null} ? ${msg} : ''"></div>
+
+        <div class="woven dim" style="margin:24px 0;"></div>
+
+        <!-- Delivery info -->
+        <div class="product-delivery-grid">
+          <div class="product-delivery-item">
+            <i class="fa-solid fa-truck-fast"></i>
+            <div>
+              <b>Delivery</b>
+              <span th:text="${product.deliveryTime}">2–5 days</span>
+            </div>
+          </div>
+          <div class="product-delivery-item">
+            <i class="fa-solid fa-indian-rupee-sign"></i>
+            <div>
+              <b>Shipping</b>
+              <span th:text="${product.shippingCharge == 0 ? 'Free' : '₹' + product.shippingCharge}">Free</span>
+            </div>
+          </div>
+          <div class="product-delivery-item">
+            <i class="fa-solid fa-rotate-left"></i>
+            <div>
+              <b>Returns</b>
+              <span th:text="${product.returnPolicy ? '7-day easy return' : 'Non-returnable'}">7-day</span>
+            </div>
+          </div>
+          <div class="product-delivery-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div>
+              <b>Authentic</b>
+              <span>100% genuine</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tabs: Description + Details -->
+    <div class="product-tabs-section">
+      <div class="product-tabs" role="tablist">
+        <button class="product-tab active" data-tab="desc" role="tab">Description</button>
+        <button class="product-tab" data-tab="details" role="tab">Product Details</button>
+      </div>
+
+      <div class="product-tab-panel active" id="tab-desc">
+        <p class="product-description-text" th:text="${product.productDescription}">Description</p>
+      </div>
+
+      <div class="product-tab-panel" id="tab-details">
+        <div class="product-details-grid">
+          <div class="product-detail-row">
+            <span class="detail-label">Brand</span>
+            <span class="detail-value" th:text="${product.brandName}">—</span>
+          </div>
+          <div class="product-detail-row">
+            <span class="detail-label">Category</span>
+            <span class="detail-value" th:text="${product.category != null ? product.category.categoryName : '—'}">—</span>
+          </div>
+          <div class="product-detail-row">
+            <span class="detail-label">Gender</span>
+            <span class="detail-value" th:text="${product.gender}">—</span>
+          </div>
+          <div class="product-detail-row">
+            <span class="detail-label">Available Sizes</span>
+            <span class="detail-value" th:text="${product.sizes}">—</span>
+          </div>
+          <div class="product-detail-row">
+            <span class="detail-label">Available Colours</span>
+            <span class="detail-value" th:text="${product.colors}">—</span>
+          </div>
+          <div class="product-detail-row">
+            <span class="detail-label">Stock</span>
+            <span class="detail-value" th:text="${product.quantity} + ' units'">—</span>
+          </div>
+          <div class="product-detail-row">
+            <span class="detail-label">Return Policy</span>
+            <span class="detail-value" th:text="${product.returnPolicy ? '7-day easy return' : 'Non-returnable'}">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Thumbnail switcher
+    document.querySelectorAll('.product-thumb').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('mainImg').src = btn.dataset.src;
+        document.querySelectorAll('.product-thumb').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Colour swatches
+    document.querySelectorAll('.colour-swatch').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.colour-swatch').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('selectedColour').textContent = btn.dataset.colour;
+      });
+    });
+
+    // Size buttons
+    document.querySelectorAll('.size-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('selectedSize').textContent = btn.dataset.size;
+      });
+    });
+
+    // Quantity
+    let qty = 1;
+    document.getElementById('qtyMinus').addEventListener('click', () => {
+      if (qty > 1) { qty--; document.getElementById('qtyValue').textContent = qty; }
+    });
+    document.getElementById('qtyPlus').addEventListener('click', () => {
+      qty++; document.getElementById('qtyValue').textContent = qty;
+    });
+
+    // Wishlist toggle
+    const wishBtn = document.getElementById('wishBtn');
+    if (wishBtn) {
+      wishBtn.addEventListener('click', () => {
+        wishBtn.classList.toggle('active');
+        const icon = wishBtn.querySelector('i');
+        icon.classList.toggle('fa-regular');
+        icon.classList.toggle('fa-solid');
+      });
+    }
+
+    // Tabs
+    document.querySelectorAll('.product-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.product-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.product-tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Add to Cart — navigate to backend with selected size & color
+    const addToCartLink = document.getElementById('addToCartBtn');
+    if (addToCartLink) {
+      addToCartLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        const size   = document.getElementById('selectedSize')?.textContent?.trim() || '';
+        const colour = document.getElementById('selectedColour')?.textContent?.trim() || '';
+        const base   = addToCartLink.getAttribute('href');
+        const params = new URLSearchParams();
+        if (size)   params.set('size', size);
+        if (colour) params.set('color', colour);
+        window.location.href = base + (params.toString() ? '?' + params.toString() : '');
+      });
+    }
+
+    // Show server flash if present
+    const flash = document.getElementById('productFlash');
+    if (flash && flash.textContent.trim() !== '') flash.style.display = 'block';
+  </script>
+
+</main>
+</body>
+</html>

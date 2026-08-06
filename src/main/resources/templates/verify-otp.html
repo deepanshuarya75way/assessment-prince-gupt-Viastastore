@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify OTP | Viasta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <!-- minimal portal header -->
+  <header class="portal-header">
+    <div class="portal-header-row">
+      <a href="/" class="portal-back">
+        <i class="fa-solid fa-arrow-left"></i> Back to store
+      </a>
+      <a href="/" class="portal-brand">Viasta<span style="color:var(--gold);font-style:italic;">.</span></a>
+      <span style="width:110px;"></span><!-- spacer to keep brand centred -->
+    </div>
+  </header>
+
+  <!-- OTP section -->
+  <section class="auth-section">
+    <div class="wrap" style="width:100%;">
+      <div class="otp-card">
+
+        <!-- top accent line via ::before on .auth-wrap — replicate inline -->
+        <div class="otp-card-glow"></div>
+
+        <div class="otp-icon-wrap">
+          <i class="fa-solid fa-envelope-open-text"></i>
+        </div>
+
+        <div class="eyebrow" style="justify-content:center;margin-bottom:10px;">Verification</div>
+        <h1 class="otp-heading">Check your <em>inbox</em></h1>
+        <p class="otp-sub">
+          We've sent a 6-digit OTP to your registered email address.<br>
+          Enter it below to verify your account.
+        </p>
+
+        <!-- flash message -->
+        <div class="otp-alert" id="otpAlert" th:if="${msg}" th:text="${msg}"></div>
+
+        <form action="/verify-otp" method="post" id="otpForm">
+          <!-- 6 individual digit boxes -->
+          <div class="otp-boxes" id="otpBoxes">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" aria-label="Digit 1">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" aria-label="Digit 2">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" aria-label="Digit 3">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" aria-label="Digit 4">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" aria-label="Digit 5">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" aria-label="Digit 6">
+          </div>
+          <!-- hidden field that collects the full OTP -->
+          <input type="hidden" name="otp" id="otpHidden">
+
+          <button type="submit" class="btn btn-gold otp-submit-btn" id="otpSubmit" disabled>
+            <i class="fa-solid fa-circle-check"></i> Verify OTP
+          </button>
+        </form>
+
+        <div class="otp-resend-row">
+          <span class="otp-timer-text">Didn't receive it?</span>
+          <a href="/resend-otp" class="otp-resend-link">
+            <i class="fa-solid fa-rotate-right"></i> Resend OTP
+          </a>
+        </div>
+
+        <div class="otp-footer-note">
+          <i class="fa-solid fa-shield-halved"></i>
+          Your OTP is valid for 5 minutes and is single-use only.
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- minimal portal footer -->
+  <footer class="portal-footer">
+    <span>© 2026 Viasta. All rights reserved. &nbsp;·&nbsp;
+      <a href="/ContactUs">Help</a> &nbsp;·&nbsp;
+      <a href="#">Privacy</a>
+    </span>
+  </footer>
+
+  <style>
+    /* ── OTP card ── */
+    .otp-card {
+      position: relative;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 52px 48px 44px;
+      text-align: center;
+      box-shadow: 0 30px 70px rgba(0,0,0,.4);
+      overflow: hidden;
+    }
+    .otp-card-glow {
+      position: absolute; top: -1px; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .otp-icon-wrap {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(201,123,74,.12); border: 1px solid var(--line-strong);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 22px; color: var(--gold-light); font-size: 24px;
+    }
+    .otp-heading {
+      font-size: clamp(26px, 4vw, 34px); margin-bottom: 10px;
+    }
+    .otp-heading em { color: var(--gold-light); font-style: italic; }
+    .otp-sub {
+      color: var(--muted); font-size: 14px; line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    /* flash */
+    .otp-alert {
+      padding: 12px 16px; font-size: 13.5px; margin-bottom: 22px;
+      border-left: 3px solid var(--garnet-light);
+      background: rgba(47,111,106,.10); color: var(--ivory); text-align: left;
+    }
+
+    /* digit boxes */
+    .otp-boxes {
+      display: flex; justify-content: center; gap: 10px; margin-bottom: 28px;
+    }
+    .otp-box {
+      width: 52px; height: 60px;
+      background: var(--ink); border: 1px solid var(--line-strong);
+      color: var(--ivory); font-family: 'Fraunces', serif;
+      font-size: 26px; text-align: center;
+      transition: border-color .2s, box-shadow .2s;
+      border-radius: var(--radius);
+    }
+    .otp-box:focus {
+      outline: none; border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,123,74,.15);
+    }
+    .otp-box.filled { border-color: var(--gold-light); }
+
+    /* submit */
+    .otp-submit-btn {
+      width: 100%; justify-content: center; padding: 15px;
+      font-size: 13px; letter-spacing: .12em;
+      opacity: .5; transition: opacity .2s, background .2s;
+    }
+    .otp-submit-btn:not(:disabled) { opacity: 1; }
+
+    /* resend row */
+    .otp-resend-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; margin-top: 22px; font-size: 13.5px; color: var(--muted);
+    }
+    .otp-resend-link {
+      color: var(--gold-light); font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+      transition: color .2s;
+    }
+    .otp-resend-link:hover { color: var(--gold); }
+
+    /* footer note */
+    .otp-footer-note {
+      margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line);
+      font-size: 12px; color: var(--muted-dim);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .otp-footer-note i { color: var(--garnet-light); }
+
+    @media(max-width:560px) {
+      .otp-card { padding: 40px 24px 36px; }
+      .otp-box { width: 42px; height: 52px; font-size: 22px; }
+      .otp-boxes { gap: 7px; }
+    }
+  </style>
+
+  <script>
+    const boxes   = document.querySelectorAll('.otp-box');
+    const hidden  = document.getElementById('otpHidden');
+    const submit  = document.getElementById('otpSubmit');
+
+    function syncHidden() {
+      const val = [...boxes].map(b => b.value).join('');
+      hidden.value = val;
+      submit.disabled = val.length < 6;
+      boxes.forEach(b => b.classList.toggle('filled', b.value !== ''));
+    }
+
+    boxes.forEach((box, i) => {
+      box.addEventListener('input', e => {
+        // allow only digits
+        box.value = box.value.replace(/\D/g, '').slice(-1);
+        if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+        syncHidden();
+      });
+
+      box.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !box.value && i > 0) {
+          boxes[i - 1].focus();
+        }
+        // allow paste on first box
+        if (e.key === 'v' && (e.ctrlKey || e.metaKey)) return;
+      });
+
+      box.addEventListener('paste', e => {
+        e.preventDefault();
+        const pasted = (e.clipboardData || window.clipboardData)
+          .getData('text').replace(/\D/g, '').slice(0, 6);
+        [...pasted].forEach((ch, idx) => {
+          if (boxes[idx]) boxes[idx].value = ch;
+        });
+        const next = Math.min(pasted.length, boxes.length - 1);
+        boxes[next].focus();
+        syncHidden();
+      });
+    });
+
+    // focus first box on load
+    boxes[0].focus();
+
+    // show flash if present
+    const alert = document.getElementById('otpAlert');
+    if (alert && alert.textContent.trim() === '') alert.style.display = 'none';
+  </script>
+
+</body>
+</html>

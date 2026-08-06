@@ -1,0 +1,134 @@
+<html th:replace="~{Admin/Adminbase::Layout(~{::main})}">
+<body>
+<main>
+
+  <div class="admin-page-head">
+    <div>
+      <div class="eyebrow">Overview</div>
+      <h1>Dashboard</h1>
+      <p>Welcome back — here's what's happening at Viasta today.</p>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+      <div class="kpi-label">Total Users</div>
+      <div class="kpi-value" th:text="${userCount}">0</div>
+      <div class="kpi-sub">Registered members</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon"><i class="fa-solid fa-box-open"></i></div>
+      <div class="kpi-label">Products</div>
+      <div class="kpi-value" th:text="${productCount}">0</div>
+      <div class="kpi-sub">Active listings</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+      <div class="kpi-label">Total Orders</div>
+      <div class="kpi-value" th:text="${orderCount}">0</div>
+      <div class="kpi-sub">All time</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon"><i class="fa-solid fa-tags"></i></div>
+      <div class="kpi-label">Categories</div>
+      <div class="kpi-value" th:text="${categoryCount}">0</div>
+      <div class="kpi-sub">Product categories</div>
+    </div>
+  </div>
+
+  <!-- Order Status Row -->
+  <div class="kpi-grid" style="grid-template-columns: repeat(3,1fr); margin-bottom: 28px;">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:rgba(217,122,122,.12);color:#d97a7a;"><i class="fa-solid fa-xmark"></i></div>
+      <div class="kpi-label">Cancelled Orders</div>
+      <div class="kpi-value" th:text="${cancelledOrders}">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:rgba(201,123,74,.12);color:var(--gold-light);"><i class="fa-solid fa-clock"></i></div>
+      <div class="kpi-label">Pending Orders</div>
+      <div class="kpi-value" th:text="${confirmedOrders}">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:rgba(47,111,106,.12);color:var(--garnet-light);"><i class="fa-solid fa-truck-fast"></i></div>
+      <div class="kpi-label">Delivered Orders</div>
+      <div class="kpi-value" th:text="${deliveredOrders}">0</div>
+    </div>
+  </div>
+
+  <!-- Chart + Enquiries -->
+  <div class="admin-grid-2">
+    <div class="admin-card">
+      <div class="admin-card-head">
+        <h3>Orders Overview</h3>
+        <a th:href="@{/Admin/ManageOrders}">View all →</a>
+      </div>
+      <canvas id="ordersChart" height="160"></canvas>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-head">
+        <h3>Recent Enquiries</h3>
+        <a th:href="@{/Admin/ViewEnquiry}">View all →</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <div th:each="enq : ${recentEnquiries}" style="padding:12px 0;border-bottom:1px solid var(--line);">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+            <span style="color:var(--ivory);font-weight:600;font-size:13.5px;" th:text="${enq.name}">Name</span>
+            <span class="v-badge gold" th:text="${enq.enquiryType}">Type</span>
+          </div>
+          <div style="color:var(--muted-dim);font-size:12px;margin-top:3px;" th:text="${#temporals.format(enq.enquiryDate, 'dd MMM yyyy')}">Date</div>
+          <div style="color:var(--muted);font-size:13px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;" th:text="${enq.message}">Message</div>
+        </div>
+        <div th:if="${recentEnquiries == null or recentEnquiries.size() == 0}" style="color:var(--muted-dim);font-size:13px;padding:20px 0;text-align:center;">
+          No recent enquiries.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="admin-card" style="margin-top:20px;">
+    <div class="admin-card-head"><h3>Quick Actions</h3></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a th:href="@{/Admin/AddProduct}" class="v-btn v-btn-gold"><i class="fa-solid fa-circle-plus"></i> Add Product</a>
+      <a th:href="@{/Admin/AddCategory}" class="v-btn v-btn-outline"><i class="fa-solid fa-tags"></i> Add Category</a>
+      <a th:href="@{/Admin/ManageOrders}" class="v-btn v-btn-outline"><i class="fa-solid fa-truck-fast"></i> View Orders</a>
+      <a th:href="@{/Admin/ManageUsers}" class="v-btn v-btn-outline"><i class="fa-solid fa-users"></i> Manage Users</a>
+    </div>
+  </div>
+
+  <script th:inline="javascript">
+    const ctx = document.getElementById('ordersChart');
+    const orderMonths = /*[[${orderMonths}]]*/ [];
+    const orderCounts = /*[[${orderCounts}]]*/ [];
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: orderMonths,
+        datasets: [{
+          label: 'Orders',
+          data: orderCounts,
+          borderColor: '#c97b4a',
+          backgroundColor: 'rgba(201,123,74,0.10)',
+          borderWidth: 2,
+          tension: 0.35,
+          fill: true,
+          pointRadius: 4,
+          pointBackgroundColor: '#c97b4a'
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#9c8894', font: { size: 11 } }, grid: { color: 'rgba(201,123,74,.08)' } },
+          y: { ticks: { color: '#9c8894', font: { size: 11 } }, grid: { color: 'rgba(201,123,74,.08)' } }
+        }
+      }
+    });
+  </script>
+
+</main>
+</body>
+</html>

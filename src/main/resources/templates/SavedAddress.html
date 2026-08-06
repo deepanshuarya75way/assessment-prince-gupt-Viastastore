@@ -1,0 +1,140 @@
+<html th:replace="~{base::Layout(~{::main})}">
+<body>
+<main>
+
+  <section class="page-banner">
+    <div class="eyebrow" style="justify-content:center;">Your Account</div>
+    <h1>Saved <em>Addresses</em></h1>
+    <p>Manage your delivery addresses for faster checkout.</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> &nbsp;/&nbsp; Saved Address
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="user-page-layout">
+
+      <!-- Sidebar nav -->
+      <aside class="user-sidebar">
+        <div class="user-sidebar-avatar">
+          <div class="user-avatar-circle">
+            <span th:text="${#strings.substring(session.LoggedInUser.name, 0, 1).toUpperCase()}">U</span>
+          </div>
+          <div class="user-sidebar-name" th:text="${session.LoggedInUser.name}">User Name</div>
+          <div class="user-sidebar-email" th:text="${session.LoggedInUser.email}">user@email.com</div>
+        </div>
+        <nav class="user-sidebar-nav">
+          <a href="/MyProfile"><i class="fa-solid fa-user"></i> My Profile</a>
+          <a href="/SavedAddress" class="active"><i class="fa-solid fa-location-dot"></i> Saved Address</a>
+          <a href="/MyOrders"><i class="fa-solid fa-bag-shopping"></i> My Orders</a>
+          <a href="/userLogout" class="user-nav-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <div class="user-content">
+
+        <div class="user-content-head">
+          <div class="eyebrow">Account</div>
+          <h2>Saved Addresses</h2>
+          <button class="user-btn user-btn-gold" id="addAddressBtn" style="margin-top:12px;">
+            <i class="fa-solid fa-plus"></i> Add New Address
+          </button>
+        </div>
+
+        <!-- Flash message -->
+        <div class="user-alert user-alert-success" th:if="${msg}" th:text="${msg}"></div>
+
+        <!-- Add Address Form (hidden by default) -->
+        <div class="user-card" id="addressFormCard" style="display:none; margin-bottom:20px;">
+          <div class="user-card-head">
+            <h3>Add New Address</h3>
+          </div>
+          <form action="/SavedAddress" method="post" th:object="${dto}">
+            <div class="user-form-grid">
+
+              <div class="user-form-group">
+                <label>Full Name</label>
+                <input type="text" name="customerName"
+                       th:field ="${dto.customerName}"
+                       placeholder="Recipient full name" required>
+              </div>
+
+              <div class="user-form-group">
+                <label>Contact Number</label>
+                <input type="text" name="contactNo"
+                       th:field="${dto.contactNo}"
+                       placeholder="10-digit mobile number" required>
+              </div>
+
+              <div class="user-form-group user-form-group-full">
+                <label>Full Address</label>
+                <textarea th:field="${dto.address}"  name="address" rows="3"
+                          placeholder="House / Flat no., Street, Area, City, State" required></textarea>
+              </div>
+
+              <div class="user-form-group">
+                <label>PIN Code</label>
+                <input th:field="${dto.pincode}" type="text" name="pincode"
+                       placeholder="6-digit PIN code" maxlength="6" required>
+              </div>
+
+            </div>
+
+            <div class="user-form-actions">
+              <button type="submit" class="user-btn user-btn-gold">
+                <i class="fa-solid fa-floppy-disk"></i> Save Address
+              </button>
+              <button type="button" class="user-btn user-btn-outline" id="cancelAddressBtn">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Saved addresses list -->
+        <div id="addressList">
+
+          <!-- Render saved addresses from backend -->
+          <div th:if="${addresses != null and !addresses.isEmpty()}">
+            <div class="address-card" th:each="addr : ${addresses}" th:if="${addr.active}">
+              <div class="address-card-head">
+                <div class="address-type-badge">
+                  <i class="fa-solid fa-location-dot"></i> Delivery Address
+                </div>
+                <div class="address-card-actions">
+                  <a th:href="@{'/SavedAddress/delete/' + ${addr.id}}"
+                     class="user-delete-btn"
+                     onclick="return confirm('Remove this address?')">
+                    <i class="fa-solid fa-trash"></i> Remove
+                  </a>
+                </div>
+              </div>
+              <div class="address-card-body">
+                <p class="address-name" th:text="${addr.customerName}"></p>
+                <p th:text="${addr.address}"></p>
+                <p>PIN: <span th:text="${addr.pincode}"></span></p>
+                <p th:text="${addr.contactNo}"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div class="user-empty-state"
+               th:if="${addresses == null or addresses.isEmpty()}">
+            <i class="fa-solid fa-location-dot"></i>
+            <p>No saved addresses yet.</p>
+            <p style="font-size:13px;color:var(--muted-dim);">
+              Add an address to speed up your checkout.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

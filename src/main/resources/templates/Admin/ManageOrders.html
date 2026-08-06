@@ -1,0 +1,103 @@
+<html th:replace="~{Admin/Adminbase::Layout(~{::main})}">
+<body>
+<main>
+
+  <div class="admin-page-head">
+    <div>
+      <div class="eyebrow">Commerce</div>
+      <h1>Manage Orders</h1>
+      <p>Track and update all customer orders.</p>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div class="order-kpi-pill">
+        <span class="v-badge gold">Processing</span>
+        <b th:text="${processingCount}">0</b>
+      </div>
+      <div class="order-kpi-pill">
+        <span class="v-badge green">Delivered</span>
+        <b th:text="${deliveredCount}">0</b>
+      </div>
+      <div class="order-kpi-pill">
+        <span class="v-badge red">Cancelled</span>
+        <b th:text="${cancelledCount}">0</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Chips -->
+  <div class="filter-chips">
+    <a th:href="@{/Admin/ManageOrders}"                            class="filter-chip" th:classappend="${param.status == null} ? 'active' : ''">All</a>
+    <a th:href="@{/Admin/ManageOrders(status='Processing')}"       class="filter-chip" th:classappend="${param.status != null and param.status[0] == 'Processing'}       ? 'active' : ''">Processing</a>
+    <a th:href="@{/Admin/ManageOrders(status='Confirmed')}"        class="filter-chip" th:classappend="${param.status != null and param.status[0] == 'Confirmed'}        ? 'active' : ''">Confirmed</a>
+    <a th:href="@{/Admin/ManageOrders(status='Shipped')}"          class="filter-chip" th:classappend="${param.status != null and param.status[0] == 'Shipped'}          ? 'active' : ''">Shipped</a>
+    <a th:href="@{/Admin/ManageOrders(status='Out_For_Delivery')}" class="filter-chip" th:classappend="${param.status != null and param.status[0] == 'Out_For_Delivery'} ? 'active' : ''">Out for Delivery</a>
+    <a th:href="@{/Admin/ManageOrders(status='Delivered')}"        class="filter-chip" th:classappend="${param.status != null and param.status[0] == 'Delivered'}        ? 'active' : ''">Delivered</a>
+    <a th:href="@{/Admin/ManageOrders(status='Cancelled')}"        class="filter-chip" th:classappend="${param.status != null and param.status[0] == 'Cancelled'}        ? 'active' : ''">Cancelled</a>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Amount</th>
+            <th>Order Status</th>
+            <th>Payment</th>
+            <th>Ordered On</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="order, srno : ${orders}">
+            <td th:text="${srno.count}"></td>
+            <td class="strong" th:text="${order.orderId}"></td>
+            <td>
+              <div th:text="${order.customerName}"></div>
+              <div style="font-size:11px;color:var(--muted-dim);" th:text="${order.contactNo}"></div>
+            </td>
+            <td>
+              <div th:text="${order.productName}"></div>
+              <div style="font-size:11px;color:var(--muted-dim);" th:if="${(order.size != null and order.size != '') or (order.color != null and order.color != '')}">
+                <span th:if="${order.size != null and order.size != ''}"   th:text="'Size: ' + ${order.size}"></span>
+                <span th:if="${order.color != null and order.color != ''}" th:text="' · ' + ${order.color}"></span>
+              </div>
+            </td>
+            <td th:text="${order.quantity}"></td>
+            <td style="color:var(--gold-light);font-weight:700;" th:text="'₹' + ${order.totalAmount}"></td>
+            <td>
+              <span class="v-badge gold"  th:if="${order.orderStatus.name() == 'Processing'}">Processing</span>
+              <span class="v-badge muted" th:if="${order.orderStatus.name() == 'Confirmed'}">Confirmed</span>
+              <span class="v-badge muted" th:if="${order.orderStatus.name() == 'Shipped'}">Shipped</span>
+              <span class="v-badge gold"  th:if="${order.orderStatus.name() == 'Out_For_Delivery'}">Out for Delivery</span>
+              <span class="v-badge green" th:if="${order.orderStatus.name() == 'Delivered'}">Delivered</span>
+              <span class="v-badge red"   th:if="${order.orderStatus.name() == 'Cancelled'}">Cancelled</span>
+            </td>
+            <td>
+              <span class="v-badge gold"  th:if="${order.paymentStatus.name() == 'Pending'}">Pending</span>
+              <span class="v-badge green" th:if="${order.paymentStatus.name() == 'Success'}">Paid</span>
+              <span class="v-badge muted" th:if="${order.paymentStatus.name() == 'Refunded'}">Refunded</span>
+              <span class="v-badge red"   th:if="${order.paymentStatus.name() == 'Cancelled'}">Cancelled</span>
+            </td>
+            <td th:text="${order.orderedAt != null ? #temporals.format(order.orderedAt, 'dd MMM yyyy') : '—'}"></td>
+            <td>
+              <a class="v-btn v-btn-outline v-btn-sm" th:href="@{'/Admin/UpdateOrder/' + ${order.id}}">
+                <i class="fa-solid fa-pen-to-square"></i> Update
+              </a>
+            </td>
+          </tr>
+          <tr th:if="${orders == null or orders.size() == 0}">
+            <td colspan="10" style="text-align:center;color:var(--muted-dim);padding:40px;">No orders found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

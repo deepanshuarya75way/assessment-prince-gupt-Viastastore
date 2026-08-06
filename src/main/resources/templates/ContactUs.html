@@ -1,0 +1,135 @@
+<html th:replace="~{base::Layout(~{::main})}">
+    <head>
+        
+    </head>
+    <body>
+        <main>
+
+  <section class="page-banner reveal">
+    <img class="banner-bg" src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1400&q=80" alt="" aria-hidden="true">
+    <div class="wrap">
+      <div class="eyebrow" style="justify-content:center;">Say Hello</div>
+      <h1>Actual Humans <em>Read This</em></h1>
+      <p>Order question, sizing help, or just curious about something — reach out and a real person on our small team will get back to you.</p>
+      <div class="breadcrumb"><a href="index.html">Home</a> / Contact</div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="contact-grid">
+
+      <div class="contact-form-card">
+        <h2>Send Us a Message</h2>
+        <p class="sub">We'll respond within 24 hours during business days.</p>
+        <form action="/SubmitEnquiry" method="post" th:object="${dto}">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input th:field="${dto.name}" type="text" name="fullName" required placeholder="Your name" autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label>Email Address *</label>
+              <input th:field="${dto.email}" type="email" name="email" required placeholder="you@example.com" autocomplete="email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Subject *</label>
+            <select th:field="${dto.enquiryType}" name="subject" required>
+              <option value="">Select a topic</option>
+              <option value="Order Enquiry">Order Enquiry</option>
+              <option value="Product Question">Product Question</option>
+              <option value="Return / Exchange">Return / Exchange</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Your Message *</label>
+            <textarea th:field="${dto.message}" name="message" required placeholder="Tell us how we can help..."></textarea>
+          </div>
+          <button class="btn btn-gold full-btn" type="submit">Send Message</button>
+        </form>
+      </div>
+
+      <div>
+        <div class="info-list">
+          <div class="info-card">
+            <span class="icon"><i class="fa-solid fa-location-dot"></i></span>
+            <div><h4>Our Studio</h4><p>Lucknow, Uttar Pradesh, India</p></div>
+          </div>
+          <div class="info-card">
+            <span class="icon"><i class="fa-solid fa-phone"></i></span>
+            <div>
+              <h4>Phone & WhatsApp</h4>
+              <p>+91 8960284516</p>
+              <a class="wa-link" href="https://wa.me/918960284516"><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</a>
+            </div>
+          </div>
+          <div class="info-card">
+            <span class="icon"><i class="fa-solid fa-envelope"></i></span>
+            <div><h4>Email</h4><p>smi@gmail.com</p></div>
+          </div>
+          <div class="info-card">
+            <span class="icon"><i class="fa-solid fa-clock"></i></span>
+            <div>
+              <h4>Working Hours</h4>
+              <p>Mon – Sat 10:00 AM – 7:00 PM</p>
+              <p>Sunday 11:00 AM – 5:00 PM</p>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:26px 0 14px;">Follow Us</h4>
+        <div class="foot-social">
+          <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+
+        <h4 style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:30px 0 14px;">Visit Our Studio</h4>
+        <div class="map-frame">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d113911.33234907106!2d80.87103233800676!3d26.848832961817748!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399bfd991f32b16b%3A0x93ccba8909995119!2sLucknow%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" loading="lazy" title="Viasta Studio Location"></iframe>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <section class="faq-block reveal">
+    <div class="wrap" style="max-width:800px;">
+      <div class="section-head" style="flex-direction:column;align-items:center;text-align:center;">
+        <div class="eyebrow" style="justify-content:center;">Before You Ask</div>
+        <h2>Things People Usually Ask</h2>
+      </div>
+
+      <details class="faq-item" open>
+        <summary>What is your return policy?</summary>
+        <p>We offer a 30-day hassle-free return policy on all unworn items with original tags attached. Simply contact our support team and we'll arrange a pickup. Refunds are processed within 5–7 business days.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How long does delivery take?</summary>
+        <p>Standard delivery takes 5–7 business days. Express delivery (2–3 business days) is available at ₹299. We ship free on orders over ₹5,000 (standard speed).</p>
+      </details>
+      <details class="faq-item">
+        <summary>Do you offer custom tailoring or alterations?</summary>
+        <p>Yes! We offer custom tailoring on select ethnic wear items. Contact us via WhatsApp with your measurements and requirements for a personalised quote.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How do I track my order?</summary>
+        <p>Once your order is dispatched, you'll receive an email with a tracking number. You can also WhatsApp us your order ID for real-time updates.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Do you ship internationally?</summary>
+        <p>Currently we ship within India only. International shipping to select countries is coming soon! Join our newsletter to be the first to know when it launches.</p>
+      </details>
+    </div>
+  </section>
+
+            <script type="text/javascript">
+            	var msg = "[[${msg}]]";
+            	if(msg!=""){
+            		alert(msg);
+            	}
+            </script>
+        </main>
+    </body>
+</html>

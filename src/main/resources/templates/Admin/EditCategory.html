@@ -1,0 +1,38 @@
+<html th:replace="~{Admin/Adminbase::Layout(~{::main})}">
+<body>
+<main>
+
+  <div class="admin-page-head">
+    <div>
+      <div class="eyebrow">Catalogue</div>
+      <h1>Edit Category</h1>
+      <p>Update category details and icon.</p>
+    </div>
+    <a th:href="@{/Admin/AddCategory}" class="v-btn v-btn-outline">
+      <i class="fa-solid fa-arrow-left"></i> Back to Categories
+    </a>
+  </div>
+
+  <div class="admin-form-card">
+    <form th:action="@{'/Admin/EditCategory/' + ${category.id}}" method="post" th:object="${dto}">
+      <div class="form-row-3" style="align-items:flex-end;">
+        <div class="v-form-group" style="margin-bottom:0;">
+          <label>Category Name</label>
+          <input type="text" name="categoryName" th:value="${dto.categoryName}" placeholder="e.g. Ethnic Wear" required>
+        </div>
+        <div class="v-form-group" style="margin-bottom:0;">
+          <label>Icon Class (Font Awesome)</label>
+          <input type="text" name="categoryIcon" th:value="${dto.categoryIcon}" placeholder="e.g. fa-solid fa-om">
+        </div>
+        <div>
+          <button type="submit" class="v-btn v-btn-gold" style="width:100%;justify-content:center;">
+            <i class="fa-solid fa-floppy-disk"></i> Save Category
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+</main>
+</body>
+</html>

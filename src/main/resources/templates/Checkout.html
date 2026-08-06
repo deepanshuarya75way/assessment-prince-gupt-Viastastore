@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{base::Layout(~{::main})}">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout | Viasta</title>
+</head>
+<body>
+<main>
+
+  <section class="page-banner" style="padding:44px 0 32px;">
+    <div class="eyebrow" style="justify-content:center;">Secure Checkout</div>
+    <h1 style="font-size:clamp(28px,4vw,42px);margin:10px 0 0;text-align:center;">
+      Complete your <em style="color:var(--gold-light);font-style:italic;">Order</em>
+    </h1>
+    <div class="breadcrumb" style="justify-content:center;margin-top:14px;">
+      <a href="/">Home</a> &nbsp;/&nbsp; <a href="/cart">Cart</a> &nbsp;/&nbsp; Checkout
+    </div>
+  </section>
+
+  <!-- flash -->
+  <div class="wrap" th:if="${msg != null}" style="padding-top:20px;">
+    <div style="padding:12px 16px;border-left:3px solid #d97a7a;background:rgba(217,122,122,.08);color:#d97a7a;font-size:13.5px;"
+         th:text="${msg}"></div>
+  </div>
+
+  <div class="wrap">
+    <form action="/PlaceOrder" method="post" id="checkoutForm">
+
+      <div class="checkout-layout">
+
+        <!-- LEFT: forms -->
+        <div class="checkout-forms">
+
+          <!-- Saved addresses (if any) -->
+          <div class="checkout-section" th:if="${addresses != null and !addresses.isEmpty()}">
+            <div class="checkout-section-head">
+              <span class="checkout-step-num">1</span>
+              <h2>Saved Addresses</h2>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+              <label class="saved-addr-chip" th:each="addr : ${addresses}"
+                     th:if="${addr.active}">
+                <input type="radio" name="savedAddrSelect"
+                       th:data-name="${addr.customerName}"
+                       th:data-contact="${addr.contactNo}"
+                       th:data-address="${addr.address}"
+                       th:data-pincode="${addr.pincode}">
+                <div class="saved-addr-body">
+                  <b th:text="${addr.customerName}">Name</b>
+                  <span th:text="${addr.address}">Address</span>
+                  <span>PIN: <span th:text="${addr.pincode}"></span> &nbsp;·&nbsp; <span th:text="${addr.contactNo}"></span></span>
+                </div>
+                <div class="saved-addr-check"><i class="fa-solid fa-circle-check"></i></div>
+              </label>
+            </div>
+            <button type="button" id="useNewAddr" class="btn btn-outline" style="padding:10px 20px;font-size:12px;">
+              + Use a different address
+            </button>
+          </div>
+
+          <!-- Delivery address form -->
+          <div class="checkout-section" id="addrFormSection"
+               th:style="${addresses == null or addresses.isEmpty()} ? '' : 'display:none'">
+            <div class="checkout-section-head">
+              <span class="checkout-step-num"
+                    th:text="${addresses != null and !addresses.isEmpty()} ? '2' : '1'">1</span>
+              <h2>Delivery Address</h2>
+            </div>
+            <div class="checkout-form-grid">
+              <div class="checkout-form-group">
+                <label>Full Name</label>
+                <input type="text" id="co-name" placeholder="Recipient full name">
+              </div>
+              <div class="checkout-form-group">
+                <label>Contact Number</label>
+                <input type="tel" id="co-phone" placeholder="10-digit mobile" maxlength="10">
+              </div>
+              <div class="checkout-form-group checkout-form-full">
+                <label>Address Line</label>
+                <input type="text" id="co-address" placeholder="House / Flat no., Street, Area">
+              </div>
+              <div class="checkout-form-group">
+                <label>PIN Code</label>
+                <input type="text" id="co-pin" placeholder="6-digit PIN" maxlength="6">
+              </div>
+            </div>
+          </div>
+
+          <!-- hidden fields posted to backend -->
+          <input type="hidden" name="customerName" id="h-name">
+          <input type="hidden" name="contactNo" id="h-phone">
+          <input type="hidden" name="shippingAddress" id="h-address">
+          <input type="hidden" name="pincode" id="h-pin">
+
+          <div class="woven dim"></div>
+
+          <!-- Payment -->
+          <div class="checkout-section">
+            <div class="checkout-section-head">
+              <span class="checkout-step-num"
+                    th:text="${addresses != null and !addresses.isEmpty()} ? '3' : '2'">2</span>
+              <h2>Payment Method</h2>
+            </div>
+
+            <div class="payment-options">
+              <label class="payment-option active">
+                <input type="radio" name="paymentMethod" value="cod" checked>
+                <div class="payment-option-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+                <div class="payment-option-info">
+                  <b>Cash on Delivery</b>
+                  <span>Pay when your order arrives</span>
+                </div>
+                <div class="payment-option-check"><i class="fa-solid fa-circle-check"></i></div>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="upi">
+                <div class="payment-option-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                <div class="payment-option-info">
+                  <b>UPI</b>
+                  <span>GPay, PhonePe, Paytm &amp; more</span>
+                </div>
+                <div class="payment-option-check"><i class="fa-solid fa-circle-check"></i></div>
+              </label>
+              <label class="payment-option payment-option-disabled">
+                <input type="radio" name="paymentMethod" value="card" disabled>
+                <div class="payment-option-icon" style="opacity:.45;"><i class="fa-solid fa-credit-card"></i></div>
+                <div class="payment-option-info">
+                  <b style="opacity:.55;">Credit / Debit Card</b>
+                  <span>Visa, Mastercard, RuPay</span>
+                </div>
+                <div class="payment-option-check" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:700;">Coming Soon</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- error -->
+          <div class="checkout-error" id="checkoutError" style="display:none;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="checkoutErrorMsg">Please fill all required fields.</span>
+          </div>
+
+          <button type="button" class="btn btn-gold checkout-place-btn" id="placeOrderBtn">
+            <i class="fa-solid fa-lock"></i> Place Order Securely
+          </button>
+          <p class="checkout-secure-note">
+            <i class="fa-solid fa-shield-halved"></i> Your payment information is encrypted and secure.
+          </p>
+
+        </div>
+
+        <!-- RIGHT: order summary -->
+        <div class="checkout-summary">
+          <div class="checkout-summary-card">
+            <div class="checkout-summary-head">
+              <h3>Order Summary</h3>
+              <a href="/cart" class="checkout-edit-link"><i class="fa-solid fa-pen"></i> Edit</a>
+            </div>
+
+            <div class="checkout-items-list">
+              <div class="checkout-item" th:each="item : ${cartItems}">
+                <img th:src="@{'/ProductImages/' + ${item.product.productImages[0]}}"
+                     th:alt="${item.product.productName}">
+                <div class="checkout-item-info">
+                  <h4 th:text="${item.product.productName}">Product</h4>
+                  <span>Qty: <span th:text="${item.quantity}"></span>
+                    <span th:if="${item.size != null and item.size != ''}"> · <span th:text="${item.size}"></span></span>
+                    <span th:if="${item.color != null and item.color != ''}"> · <span th:text="${item.color}"></span></span>
+                  </span>
+                </div>
+                <span class="checkout-item-price">₹<span th:text="${item.finalPrice}"></span></span>
+              </div>
+            </div>
+
+            <div class="woven dim" style="margin:18px 0;"></div>
+
+            <div class="checkout-total-rows">
+              <div class="checkout-total-row">
+                <span>Subtotal</span>
+                <span>₹<span th:text="${subtotal}"></span></span>
+              </div>
+              <div class="checkout-total-row">
+                <span>Shipping</span>
+                <span th:text="${shipping == 0 ? 'Free' : '₹' + shipping}">₹150</span>
+              </div>
+              <div class="checkout-total-row checkout-total-final">
+                <span>Total</span>
+                <span>₹<span th:text="${total}"></span></span>
+              </div>
+            </div>
+
+            <div class="checkout-trust-row">
+              <span><i class="fa-solid fa-truck-fast"></i> Free shipping over ₹5,000</span>
+              <span><i class="fa-solid fa-rotate-left"></i> Easy returns</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <style>
+    .checkout-layout { display:grid;grid-template-columns:1.1fr 0.9fr;gap:44px;padding:50px 0 90px;align-items:start; }
+    .checkout-section { padding:28px 0; }
+    .checkout-section-head { display:flex;align-items:center;gap:14px;margin-bottom:24px; }
+    .checkout-step-num { width:32px;height:32px;border-radius:50%;background:var(--gold);color:#1a1409;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:16px;font-weight:600;flex-shrink:0; }
+    .checkout-section-head h2 { font-size:20px; }
+    .checkout-form-grid { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
+    .checkout-form-full { grid-column:1/-1; }
+    .checkout-form-group { display:flex;flex-direction:column;gap:7px; }
+    .checkout-form-group label { font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700; }
+    .checkout-form-group input { background:var(--ink);border:1px solid var(--line-strong);color:var(--ivory);padding:12px 14px;font-size:14px;font-family:inherit;transition:border-color .2s; }
+    .checkout-form-group input:focus { outline:none;border-color:var(--gold); }
+    .saved-addr-chip { display:flex;align-items:flex-start;gap:14px;padding:16px 18px;border:1px solid var(--line-strong);background:var(--ink);cursor:pointer;transition:border-color .2s; }
+    .saved-addr-chip input[type="radio"] { display:none; }
+    .saved-addr-chip.selected { border-color:var(--gold);background:rgba(201,123,74,.06); }
+    .saved-addr-body { flex:1;display:flex;flex-direction:column;gap:3px; }
+    .saved-addr-body b { font-size:14px;color:var(--ivory); }
+    .saved-addr-body span { font-size:12.5px;color:var(--muted); }
+    .saved-addr-check { color:var(--line-strong);font-size:18px;transition:color .2s;margin-top:2px; }
+    .saved-addr-chip.selected .saved-addr-check { color:var(--gold); }
+    .payment-options { display:flex;flex-direction:column;gap:10px; }
+    .payment-option { display:flex;align-items:center;gap:14px;padding:16px 18px;border:1px solid var(--line-strong);background:var(--ink);cursor:pointer;transition:border-color .2s; }
+    .payment-option input[type="radio"] { display:none; }
+    .payment-option.active { border-color:var(--gold);background:rgba(201,123,74,.06); }
+    .payment-option-icon { width:38px;height:38px;border-radius:50%;background:rgba(201,123,74,.12);color:var(--gold-light);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0; }
+    .payment-option-info { flex:1; }
+    .payment-option-info b { display:block;font-size:14px;color:var(--ivory);margin-bottom:2px; }
+    .payment-option-info span { font-size:12px;color:var(--muted); }
+    .payment-option-check { color:var(--line-strong);font-size:18px;transition:color .2s; }
+    .payment-option.active .payment-option-check { color:var(--gold); }
+    .payment-option-disabled { cursor:not-allowed; opacity:.7; border-style:dashed; }
+    .payment-option-disabled:hover { border-color:var(--line-strong) !important; }
+    .checkout-error { display:flex;align-items:center;gap:10px;padding:12px 16px;border-left:3px solid #d97a7a;background:rgba(217,122,122,.08);color:#d97a7a;font-size:13.5px;margin-bottom:18px; }
+    .checkout-place-btn { width:100%;justify-content:center;padding:17px;font-size:14px;letter-spacing:.12em;margin-bottom:14px; }
+    .checkout-secure-note { text-align:center;font-size:12px;color:var(--muted-dim);display:flex;align-items:center;justify-content:center;gap:7px; }
+    .checkout-secure-note i { color:var(--garnet-light); }
+    .checkout-summary { position:sticky;top:100px; }
+    .checkout-summary-card { background:var(--surface);border:1px solid var(--line);padding:26px; }
+    .checkout-summary-head { display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line); }
+    .checkout-summary-head h3 { font-size:18px; }
+    .checkout-edit-link { font-size:12px;color:var(--gold-light);display:flex;align-items:center;gap:6px; }
+    .checkout-items-list { display:flex;flex-direction:column;gap:14px; }
+    .checkout-item { display:flex;gap:12px;align-items:center; }
+    .checkout-item img { width:58px;height:70px;object-fit:cover;border:1px solid var(--line);flex-shrink:0; }
+    .checkout-item-info { flex:1;min-width:0; }
+    .checkout-item-info h4 { font-size:14px;font-weight:500;color:var(--ivory);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .checkout-item-info span { font-size:12px;color:var(--muted); }
+    .checkout-item-price { font-size:14px;font-weight:700;color:var(--gold-light);flex-shrink:0; }
+    .checkout-total-rows { display:flex;flex-direction:column;gap:12px; }
+    .checkout-total-row { display:flex;justify-content:space-between;font-size:14px;color:var(--muted); }
+    .checkout-total-final { font-size:17px;font-weight:700;color:var(--ivory);padding-top:14px;border-top:1px solid var(--line);margin-top:4px; }
+    .checkout-total-final span:last-child { color:var(--gold-light);font-family:'Fraunces',serif;font-size:22px; }
+    .checkout-trust-row { display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted-dim); }
+    .checkout-trust-row i { color:var(--gold);margin-right:5px; }
+    @media(max-width:900px) { .checkout-layout{grid-template-columns:1fr;} .checkout-summary{position:static;} }
+    @media(max-width:560px) { .checkout-form-grid{grid-template-columns:1fr;} }
+  </style>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    // Saved address chip selection
+    document.querySelectorAll('.saved-addr-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.saved-addr-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        chip.querySelector('input').checked = true;
+        document.getElementById('h-name').value    = chip.querySelector('input').dataset.name;
+        document.getElementById('h-phone').value   = chip.querySelector('input').dataset.contact;
+        document.getElementById('h-address').value = chip.querySelector('input').dataset.address;
+        document.getElementById('h-pin').value     = chip.querySelector('input').dataset.pincode;
+        document.getElementById('addrFormSection').style.display = 'none';
+      });
+    });
+
+    const useNewBtn = document.getElementById('useNewAddr');
+    if (useNewBtn) {
+      useNewBtn.addEventListener('click', () => {
+        document.querySelectorAll('.saved-addr-chip').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.saved-addr-chip input').forEach(i => i.checked = false);
+        document.getElementById('h-name').value = '';
+        document.getElementById('h-phone').value = '';
+        document.getElementById('h-address').value = '';
+        document.getElementById('h-pin').value = '';
+        document.getElementById('addrFormSection').style.display = 'block';
+      });
+    }
+
+    // Payment option toggle — card is disabled
+    document.querySelectorAll('.payment-option:not(.payment-option-disabled)').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        opt.querySelector('input').checked = true;
+      });
+    });
+
+    function getAddressFields() {
+      const addrSection = document.getElementById('addrFormSection');
+      if (addrSection && addrSection.style.display !== 'none') {
+        return {
+          name:    document.getElementById('co-name')?.value.trim()    || '',
+          phone:   document.getElementById('co-phone')?.value.trim()   || '',
+          address: document.getElementById('co-address')?.value.trim() || '',
+          pin:     document.getElementById('co-pin')?.value.trim()     || ''
+        };
+      }
+      return {
+        name:    document.getElementById('h-name').value,
+        phone:   document.getElementById('h-phone').value,
+        address: document.getElementById('h-address').value,
+        pin:     document.getElementById('h-pin').value
+      };
+    }
+
+    function validateAddress(fields) {
+      const errEl  = document.getElementById('checkoutError');
+      const errMsg = document.getElementById('checkoutErrorMsg');
+      if (!fields.name || !fields.phone || !fields.address || !fields.pin) {
+        errMsg.textContent = 'Please fill in all delivery address fields.';
+        errEl.style.display = 'flex';
+        errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return false;
+      }
+      if (!/^\d{10}$/.test(fields.phone)) {
+        errMsg.textContent = 'Please enter a valid 10-digit phone number.';
+        errEl.style.display = 'flex'; return false;
+      }
+      if (!/^\d{6}$/.test(fields.pin)) {
+        errMsg.textContent = 'Please enter a valid 6-digit PIN code.';
+        errEl.style.display = 'flex'; return false;
+      }
+      document.getElementById('checkoutError').style.display = 'none';
+      return true;
+    }
+
+    document.getElementById('placeOrderBtn').addEventListener('click', () => {
+      const fields  = getAddressFields();
+      if (!validateAddress(fields)) return;
+
+      // fill hidden fields for COD form submit
+      document.getElementById('h-name').value    = fields.name;
+      document.getElementById('h-phone').value   = fields.phone;
+      document.getElementById('h-address').value = fields.address;
+      document.getElementById('h-pin').value     = fields.pin;
+
+      const method = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'cod';
+
+      if (method === 'upi') {
+        // Initiate Razorpay payment
+        const btn = document.getElementById('placeOrderBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Initiating Payment...';
+
+        const formData = new FormData();
+        formData.append('customerName',    fields.name);
+        formData.append('contactNo',       fields.phone);
+        formData.append('shippingAddress', fields.address);
+        formData.append('pincode',         fields.pin);
+
+        fetch('/Payment/initiate', { method: 'POST', body: formData })
+          .then(r => r.json())
+          .then(data => {
+            if (data.error) {
+              document.getElementById('checkoutErrorMsg').textContent = 'Payment initiation failed: ' + data.error;
+              document.getElementById('checkoutError').style.display = 'flex';
+              btn.disabled = false;
+              btn.innerHTML = '<i class="fa-solid fa-lock"></i> Place Order Securely';
+              return;
+            }
+            const options = {
+              key:      data.key,
+              amount:   data.amount,
+              currency: 'INR',
+              name:     'Viasta',
+              description: 'Order Payment',
+              order_id: data.orderId,
+              prefill: {
+                name:    data.name,
+                email:   data.email,
+                contact: data.contact
+              },
+              theme: { color: '#c97b4a' },
+              method: { upi: true, card: false, netbanking: false, wallet: false },
+              handler: function(response) {
+                const vForm = new FormData();
+                vForm.append('razorpay_payment_id', response.razorpay_payment_id);
+                vForm.append('razorpay_order_id',   response.razorpay_order_id);
+                vForm.append('razorpay_signature',  response.razorpay_signature);
+                fetch('/Payment/verify', { method: 'POST', body: vForm })
+                  .then(r => r.json())
+                  .then(res => {
+                    if (res.status === 'success') {
+                      window.location.href = '/TrackOrder/' + res.orderId;
+                    } else {
+                      document.getElementById('checkoutErrorMsg').textContent = 'Payment verification failed. Please contact support.';
+                      document.getElementById('checkoutError').style.display = 'flex';
+                      btn.disabled = false;
+                      btn.innerHTML = '<i class="fa-solid fa-lock"></i> Place Order Securely';
+                    }
+                  });
+              },
+              modal: {
+                ondismiss: function() {
+                  btn.disabled = false;
+                  btn.innerHTML = '<i class="fa-solid fa-lock"></i> Place Order Securely';
+                }
+              }
+            };
+            new Razorpay(options).open();
+          })
+          .catch(() => {
+            document.getElementById('checkoutErrorMsg').textContent = 'Something went wrong. Please try again.';
+            document.getElementById('checkoutError').style.display = 'flex';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-lock"></i> Place Order Securely';
+          });
+      } else {
+        // COD — normal form submit
+        document.getElementById('checkoutForm').submit();
+      }
+    });
+  </script>
+
+</main>
+</body>
+</html>

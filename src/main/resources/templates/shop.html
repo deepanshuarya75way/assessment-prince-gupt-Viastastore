@@ -1,0 +1,349 @@
+<html th:replace="~{base::Layout(~{::main})}">
+<body>
+<main>
+
+  <!-- Page Banner -->
+  <section class="page-banner">
+    <div class="eyebrow" style="justify-content:center;">The Collection</div>
+    <h1>Shop <em>The Edit</em></h1>
+    <p>Every piece considered — honest fabric, clean construction, made to last.</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> &nbsp;/&nbsp; Shop
+      <span th:if="${selectedCategory != null}"> &nbsp;/&nbsp; <span th:text="${selectedCategory}"></span></span>
+    </div>
+  </section>
+
+  <!-- Shop Layout -->
+  <div class="wrap">
+    <div class="shop-layout">
+
+      <!-- ── Sidebar Filter Panel ── -->
+      <aside class="filter-panel">
+        <div class="filter-panel-head">
+          <h3>Filter</h3>
+          <a th:href="@{/shop}">Clear all</a>
+        </div>
+
+        <!-- Categories -->
+        <div class="filter-group">
+          <h4>Category</h4>
+          <div class="filter-list">
+            <a th:href="@{/shop}"
+               class="shop-cat-link"
+               th:classappend="${param.id == null} ? ' active-cat' : ''">
+              <span>All Products</span>
+              <span class="count" th:text="${products.size()}"></span>
+            </a>
+            <a th:each="cate : ${categories}"
+               th:href="@{/shop(id=${cate.id})}"
+               class="shop-cat-link"
+               th:classappend="${param.id != null and param.id[0] == cate.id.toString()} ? ' active-cat' : ''">
+              <span>
+                <i th:class="${cate.categoryIcon}" style="width:14px;text-align:center;margin-right:6px;color:var(--gold);"></i>
+                <span th:text="${cate.categoryName}"></span>
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Gender -->
+        <div class="filter-group">
+          <h4>Gender</h4>
+          <div class="filter-list">
+            <label><span>Mens</span>   <input type="checkbox" class="filter-gender" value="Mens"></label>
+            <label><span>Womens</span> <input type="checkbox" class="filter-gender" value="Womens"></label>
+            <label><span>Kids</span>   <input type="checkbox" class="filter-gender" value="Kids"></label>
+            <label><span>Unisex</span> <input type="checkbox" class="filter-gender" value="Unisex"></label>
+          </div>
+        </div>
+
+        <!-- Price Range -->
+        <div class="filter-group">
+          <h4>Price Range</h4>
+          <div class="price-inputs">
+            <div class="price-input-wrap">
+              <span class="prefix">₹</span>
+              <input type="number" id="priceMin" placeholder="0" value="0" min="0">
+            </div>
+            <span style="color:var(--muted-dim);">—</span>
+            <div class="price-input-wrap">
+              <span class="prefix">₹</span>
+              <input type="number" id="priceMax" placeholder="50000" value="50000" min="0">
+            </div>
+          </div>
+          <button class="btn btn-outline apply-price-filter" style="width:100%;justify-content:center;padding:10px;">Apply</button>
+        </div>
+
+        <!-- Stock -->
+        <div class="filter-group">
+          <h4>Availability</h4>
+          <div class="filter-list">
+            <label><span>In Stock</span>   <input type="checkbox" class="filter-stock" value="Available" checked></label>
+            <label><span>Out of Stock</span><input type="checkbox" class="filter-stock" value="Out_of_Stock"></label>
+          </div>
+        </div>
+
+        <!-- Return Policy -->
+        <div class="filter-group">
+          <h4>Return Policy</h4>
+          <div class="filter-list">
+            <label><span>With Returns</span><input type="checkbox" class="filter-return" value="true"></label>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ── Product Area ── -->
+      <div class="shop-results">
+
+        <!-- Toolbar -->
+        <div class="shop-toolbar">
+          <span class="count">
+            Showing
+            <span id="visibleCount" th:text="${products.size()}"></span>
+            of <span th:text="${products.size()}"></span> products
+          </span>
+          <div class="toolbar-right">
+            <select class="sort-select" id="sortSelect" aria-label="Sort products">
+              <option value="">Sort: Featured</option>
+              <option value="low">Price: Low to High</option>
+              <option value="high">Price: High to Low</option>
+              <option value="discount">Biggest Discount</option>
+              <option value="name">Name: A–Z</option>
+            </select>
+            <div class="view-toggle">
+              <button data-view="grid" class="active" aria-label="Grid view"><i class="fa-solid fa-grip"></i></button>
+              <button data-view="list" aria-label="List view"><i class="fa-solid fa-list"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active search tag placeholder -->
+        <div class="active-search-tag-wrap"></div>
+
+        <!-- Product Grid -->
+        <div class="prod-grid" id="shopGrid">
+
+          <article class="prod-card"
+                   th:each="product : ${products}"
+                   th:data-category="${product.category != null ? product.category.categoryName : ''}"
+                   th:data-price="${product.finalPrice}"
+                   th:data-gender="${product.gender}"
+                   th:data-status="${product.status.name()}"
+                   th:data-return="${product.returnPolicy}">
+
+            <div class="prod-media">
+              <!-- Product image from admin -->
+              <img th:src="@{'/ProductImages/' + ${product.productImages.get(0)}}"
+                   th:alt="${product.productName}"
+                   loading="lazy">
+
+              <!-- Discount ribbon -->
+              <div class="prod-fold" th:if="${product.discount > 0}">
+                <span th:text="${'-' + product.discount + '%'}"></span>
+              </div>
+
+              <!-- Stock overlay -->
+              <div class="prod-out-overlay" th:if="${product.status.name() == 'Out_of_Stock'}">
+                Out of Stock
+              </div>
+
+              <!-- Wishlist -->
+              <button class="quick-wish" aria-label="Add to wishlist">
+                <i class="fa-regular fa-heart"></i>
+              </button>
+
+              <!-- Quick add -->
+              <div class="quick-add" th:if="${product.status.name() == 'Available'}">
+                <button type="button">
+                  <i class="fa-solid fa-bag-shopping"></i> Quick Add
+                </button>
+              </div>
+            </div>
+
+            <div class="prod-body">
+              <div class="prod-cat" th:text="${product.category != null ? product.category.categoryName : ''}"></div>
+              <h3 th:text="${product.productName}"></h3>
+
+              <!-- Brand -->
+              <div style="font-size:12px;color:var(--muted-dim);margin-bottom:6px;" th:if="${product.brandName != null and !product.brandName.isEmpty()}">
+                <span th:text="${product.brandName}"></span>
+              </div>
+
+              <!-- Price -->
+              <div class="prod-price">
+                <span class="now">₹<span th:text="${product.finalPrice}"></span></span>
+                <span class="was" th:if="${product.discount > 0}">₹<span th:text="${product.sellingPrice}"></span></span>
+              </div>
+
+              <!-- Delivery & return badges -->
+              <div class="prod-badges">
+                <span class="prod-badge-item" th:if="${product.shippingCharge == 0}">
+                  <i class="fa-solid fa-truck-fast"></i> Free shipping
+                </span>
+                <span class="prod-badge-item" th:if="${product.returnPolicy}">
+                  <i class="fa-solid fa-rotate-left"></i> Returns
+                </span>
+                <span class="prod-badge-item" th:if="${product.deliveryTime != null and !product.deliveryTime.isEmpty()}">
+                  <i class="fa-regular fa-clock"></i>
+                  <span th:text="${product.deliveryTime}"></span>
+                </span>
+              </div>
+
+              <!-- View button -->
+              <a th:href="@{'/Product/' + ${product.id}}" class="prod-view-btn">
+                View Product <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+
+          </article>
+
+        </div>
+
+        <!-- Empty state -->
+        <div class="search-empty-state" id="shopEmpty" th:classappend="${#lists.isEmpty(products)} ? 'show' : ''">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <p th:if="${#lists.isEmpty(products)}">No products found in this category yet.</p>
+          <p th:unless="${#lists.isEmpty(products)}">No products match your current filters.</p>
+          <a th:href="@{/shop}" class="btn btn-outline" style="margin-top:16px;">Clear Filters</a>
+        </div>
+
+      </div>
+      <!-- end shop-results -->
+
+    </div>
+    <!-- end shop-layout -->
+  </div>
+
+  <style>
+    /* ── Category sidebar links ── */
+    .shop-cat-link {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 14px; color: var(--muted); padding: 9px 0;
+      border-bottom: 1px solid var(--line); transition: color .2s;
+      text-decoration: none;
+    }
+    .shop-cat-link:last-child { border-bottom: none; }
+    .shop-cat-link:hover { color: var(--gold-light); }
+    .shop-cat-link.active-cat { color: var(--gold-light); font-weight: 700; }
+    .shop-cat-link .count {
+      font-size: 11px; color: var(--muted-dim);
+      background: rgba(201,123,74,.10); padding: 2px 8px; border-radius: 20px;
+    }
+
+    /* ── Out of stock overlay ── */
+    .prod-out-overlay {
+      position: absolute; inset: 0; background: rgba(15,12,9,.62);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--ivory); font-weight: 700; z-index: 2;
+    }
+
+    /* ── Small info badges under price ── */
+    .prod-badges {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px;
+    }
+    .prod-badge-item {
+      font-size: 11px; color: var(--muted-dim);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .prod-badge-item i { color: var(--garnet-light); font-size: 10px; }
+
+    /* ── View product button ── */
+    .prod-view-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+      font-weight: 700; color: var(--gold-light); border-top: 1px solid var(--line);
+      margin-top: auto; transition: gap .2s;
+    }
+    .prod-view-btn:hover { color: var(--gold); }
+    .prod-view-btn i { font-size: 11px; transition: transform .2s; }
+    .prod-view-btn:hover i { transform: translateX(4px); }
+
+    /* ── List view overrides ── */
+    .prod-grid.list-view .prod-badges { flex-direction: row; }
+    .prod-grid.list-view .prod-view-btn { border-top: none; padding-top: 0; }
+  </style>
+
+  <script>
+    (function () {
+      var grid = document.getElementById('shopGrid');
+      var cards = Array.from(grid ? grid.querySelectorAll('.prod-card') : []);
+      var countEl = document.getElementById('visibleCount');
+      var emptyEl = document.getElementById('shopEmpty');
+
+      function getChecked(cls) {
+        return Array.from(document.querySelectorAll('.' + cls + ':checked')).map(function(c){ return c.value; });
+      }
+
+      function applyFilters() {
+        var genders  = getChecked('filter-gender');
+        var stocks   = getChecked('filter-stock');
+        var returns  = getChecked('filter-return');
+        var min = parseFloat(document.getElementById('priceMin').value) || 0;
+        var max = parseFloat(document.getElementById('priceMax').value) || Infinity;
+
+        var visible = 0;
+        cards.forEach(function(card) {
+          var price   = parseFloat(card.dataset.price) || 0;
+          var gender  = card.dataset.gender || '';
+          var status  = card.dataset.status || '';
+          var ret     = card.dataset.return || 'false';
+
+          var okGender  = genders.length === 0  || genders.indexOf(gender) !== -1;
+          var okStock   = stocks.length === 0   || stocks.indexOf(status) !== -1;
+          var okReturn  = returns.length === 0  || (returns.indexOf('true') !== -1 && ret === 'true');
+          var okPrice   = price >= min && price <= max;
+
+          var show = okGender && okStock && okReturn && okPrice;
+          card.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+
+        if (countEl) countEl.textContent = visible;
+        if (emptyEl) emptyEl.classList.toggle('show', visible === 0);
+      }
+
+      // Gender / stock / return checkboxes
+      document.querySelectorAll('.filter-gender, .filter-stock, .filter-return').forEach(function(cb) {
+        cb.addEventListener('change', applyFilters);
+      });
+
+      // Price apply button
+      var applyBtn = document.querySelector('.apply-price-filter');
+      if (applyBtn) applyBtn.addEventListener('click', applyFilters);
+      ['priceMin','priceMax'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('keydown', function(e){ if(e.key==='Enter') applyFilters(); });
+      });
+
+      // Sort
+      var sortSel = document.getElementById('sortSelect');
+      if (sortSel) {
+        sortSel.addEventListener('change', function() {
+          var val = sortSel.value;
+          var sorted = cards.slice();
+          if (val === 'low')      sorted.sort(function(a,b){ return parseFloat(a.dataset.price)-parseFloat(b.dataset.price); });
+          if (val === 'high')     sorted.sort(function(a,b){ return parseFloat(b.dataset.price)-parseFloat(a.dataset.price); });
+          if (val === 'discount') sorted.sort(function(a,b){ return parseFloat(b.dataset.discount||0)-parseFloat(a.dataset.discount||0); });
+          if (val === 'name')     sorted.sort(function(a,b){ return (a.querySelector('h3').textContent).localeCompare(b.querySelector('h3').textContent); });
+          sorted.forEach(function(c){ grid.appendChild(c); });
+        });
+      }
+
+      // View toggle
+      document.querySelectorAll('.view-toggle button').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.view-toggle button').forEach(function(b){ b.classList.remove('active'); });
+          btn.classList.add('active');
+          grid.classList.toggle('list-view', btn.dataset.view === 'list');
+        });
+      });
+
+      // Run once on load to respect stock checkboxes default state
+      applyFilters();
+    })();
+  </script>
+
+</main>
+</body>
+</html>

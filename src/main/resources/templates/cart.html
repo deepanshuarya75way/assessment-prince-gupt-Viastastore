@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{base::Layout(~{::main})}">
+<head>
+  <meta charset="UTF-8">
+  <title>Cart | Viasta</title>
+</head>
+<body>
+<main>
+
+  <section class="page-banner" style="padding:44px 0 30px;">
+    <div class="eyebrow" style="justify-content:center;">Almost There</div>
+    <h1 style="font-size:clamp(28px,4vw,44px);margin:10px 0 0;text-align:center;">
+      Your <em style="color:var(--gold-light);font-style:italic;">Shopping Bag</em>
+    </h1>
+    <div class="breadcrumb" style="justify-content:center;margin-top:14px;">
+      <a href="/">Home</a> &nbsp;/&nbsp; Cart
+    </div>
+  </section>
+
+  <!-- flash -->
+  <div class="wrap" th:if="${msg != null}" style="padding-top:20px;">
+    <div style="padding:12px 16px;border-left:3px solid var(--gold);background:rgba(201,123,74,.08);color:var(--ivory);font-size:13.5px;"
+         th:text="${msg}"></div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- Empty state -->
+    <div th:if="${cartItems == null or cartItems.isEmpty()}"
+         class="cart-empty-page" style="margin:60px 0;">
+      <i class="fa-solid fa-bag-shopping"></i>
+      <h2>Your bag is empty</h2>
+      <p>Nothing here yet — take a look through the current collection.</p>
+      <a href="/shop" class="btn btn-gold">Explore The Edit</a>
+    </div>
+
+    <!-- Cart with items -->
+    <div th:if="${cartItems != null and !cartItems.isEmpty()}"
+         class="cart-page-layout">
+
+      <!-- Items -->
+      <div class="cart-items-card">
+        <div class="cart-items-head">
+          <h2>Items In Your Bag</h2>
+          <span style="font-size:13px;color:var(--muted);"
+                th:text="${cartItems.size()} + ' item(s)'"></span>
+        </div>
+
+        <div th:each="item : ${cartItems}" class="cart-page-line">
+          <img th:src="@{'/ProductImages/' + ${item.product.productImages[0]}}"
+               th:alt="${item.product.productName}">
+          <div class="cart-page-line-info">
+            <h3 th:text="${item.product.productName}">Product</h3>
+            <span class="unit-price">₹<span th:text="${item.productPrice}"></span> each</span>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px;">
+              <span th:if="${item.size != null and item.size != ''}">Size: <b th:text="${item.size}"></b> &nbsp;</span>
+              <span th:if="${item.color != null and item.color != ''}">Color: <b th:text="${item.color}"></b></span>
+            </div>
+            <div class="cart-page-line-actions">
+              <!-- qty controls -->
+              <div class="cart-page-qty">
+                <a th:href="@{'/cart/update/' + ${item.id} + '?qty=' + ${item.quantity - 1}}"
+                   class="cart-page-qty-btn">−</a>
+                <span th:text="${item.quantity}">1</span>
+                <a th:href="@{'/cart/update/' + ${item.id} + '?qty=' + ${item.quantity + 1}}"
+                   class="cart-page-qty-btn">+</a>
+              </div>
+              <span class="cart-page-line-total">₹<span th:text="${item.finalPrice}"></span></span>
+              <a th:href="@{'/cart/remove/' + ${item.id}}" class="cart-page-remove">
+                <i class="fa-solid fa-trash"></i> Remove
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <aside class="order-summary-card">
+        <h3>Order Summary</h3>
+
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span class="value">₹<span th:text="${#aggregates.sum(cartItems.![finalPrice])}">0</span></span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span class="value" th:text="${#aggregates.sum(cartItems.![finalPrice]) >= 5000 ? 'Free' : '₹150'}">₹150</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span class="value">
+            ₹<span th:text="${#aggregates.sum(cartItems.![finalPrice]) >= 5000
+              ? #aggregates.sum(cartItems.![finalPrice])
+              : #aggregates.sum(cartItems.![finalPrice]) + 150}">0</span>
+          </span>
+        </div>
+
+        <a href="/Checkout" class="btn btn-gold full-btn" style="margin-top:22px;justify-content:center;">
+          <i class="fa-solid fa-lock"></i> Proceed to Checkout
+        </a>
+        <a href="/shop" style="display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--muted);">
+          ← Continue Shopping
+        </a>
+      </aside>
+
+    </div>
+
+    <!-- Trust bar -->
+    <div class="trust-bar" style="border:1px solid var(--line);padding:26px 32px;margin:40px 0 60px;">
+      <div class="trust-item"><i class="fa-solid fa-truck-fast"></i> Free shipping over ₹5,000</div>
+      <div class="trust-item"><i class="fa-solid fa-rotate-left"></i> Hassle-free 30-day exchanges</div>
+      <div class="trust-item"><i class="fa-solid fa-shield-halved"></i> Encrypted, secure checkout</div>
+      <div class="trust-item"><i class="fa-solid fa-indian-rupee-sign"></i> Best price guaranteed</div>
+    </div>
+
+  </div>
+
+  <style>
+    .cart-page-qty-btn {
+      width: 30px; height: 30px; border: 1px solid var(--line-strong);
+      background: transparent; color: var(--ivory); font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; transition: border-color .2s, color .2s;
+    }
+    .cart-page-qty-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+  </style>
+
+</main>
+</body>
+</html>

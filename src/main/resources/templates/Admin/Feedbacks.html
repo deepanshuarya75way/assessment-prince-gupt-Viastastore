@@ -1,0 +1,231 @@
+<html th:replace="~{Admin/Adminbase::Layout(~{::main})}">
+<body>
+<main>
+
+  <div class="admin-page-head">
+    <div>
+      <div class="eyebrow">Commerce</div>
+      <h1>Feedbacks</h1>
+      <p>Customer reviews and ratings for your products.</p>
+    </div>
+    <!-- Filter chips -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="filter-chip active" onclick="filterFeedback('all', this)">All</button>
+      <button class="filter-chip" onclick="filterFeedback('5', this)"><i class="fa-solid fa-star" style="color:var(--gold);font-size:10px;"></i> 5 Star</button>
+      <button class="filter-chip" onclick="filterFeedback('4', this)"><i class="fa-solid fa-star" style="color:var(--gold);font-size:10px;"></i> 4 Star</button>
+      <button class="filter-chip" onclick="filterFeedback('3', this)"><i class="fa-solid fa-star" style="color:var(--gold);font-size:10px;"></i> 3 Star</button>
+      <button class="filter-chip" onclick="filterFeedback('low', this)"><i class="fa-solid fa-star" style="color:#d97a7a;font-size:10px;"></i> 1–2 Star</button>
+    </div>
+  </div>
+
+  <!-- Summary KPI row -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:28px;">
+    <div class="kpi-card">
+      <div class="kpi-icon"><i class="fa-solid fa-star"></i></div>
+      <div class="kpi-label">Average Rating</div>
+      <div class="kpi-value">4.8</div>
+      <div class="kpi-sub">Across all products</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:rgba(47,111,106,.12);color:var(--garnet-light);"><i class="fa-solid fa-comments"></i></div>
+      <div class="kpi-label">Total Reviews</div>
+      <div class="kpi-value">—</div>
+      <div class="kpi-sub">Awaiting backend</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:rgba(47,111,106,.12);color:var(--garnet-light);"><i class="fa-solid fa-thumbs-up"></i></div>
+      <div class="kpi-label">Positive (4–5★)</div>
+      <div class="kpi-value">—</div>
+      <div class="kpi-sub">Awaiting backend</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:rgba(217,122,122,.12);color:#d97a7a;"><i class="fa-solid fa-thumbs-down"></i></div>
+      <div class="kpi-label">Critical (1–2★)</div>
+      <div class="kpi-value">—</div>
+      <div class="kpi-sub">Awaiting backend</div>
+    </div>
+  </div>
+
+  <!-- Feedback Cards Grid -->
+  <div id="feedbackGrid" class="feedback-grid">
+
+    <!-- Sample card: 5 star -->
+    <div class="feedback-card" data-rating="5">
+      <div class="fb-card-head">
+        <div class="fb-avatar">M</div>
+        <div class="fb-meta">
+          <span class="fb-name">Meera K.</span>
+          <span class="fb-date">12 Jan 2026</span>
+        </div>
+        <div class="fb-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+        </div>
+      </div>
+      <div class="fb-product">Indigo Trail Jacket</div>
+      <p class="fb-message">"I didn't expect a going-out kurta to become my everyday uniform, but here we are — the tailoring is that good."</p>
+      <div class="fb-actions">
+        <span class="v-badge green">Verified Purchase</span>
+        <button class="v-btn v-btn-danger v-btn-sm fb-delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
+      </div>
+    </div>
+
+    <!-- Sample card: 5 star -->
+    <div class="feedback-card" data-rating="5">
+      <div class="fb-card-head">
+        <div class="fb-avatar">A</div>
+        <div class="fb-meta">
+          <span class="fb-name">Arjun R.</span>
+          <span class="fb-date">03 Feb 2026</span>
+        </div>
+        <div class="fb-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+        </div>
+      </div>
+      <div class="fb-product">The Ivory Weave Shirt</div>
+      <p class="fb-message">"Wore the jacket to a friend's sangeet and spent half the night explaining where I got it. Worth every rupee."</p>
+      <div class="fb-actions">
+        <span class="v-badge green">Verified Purchase</span>
+        <button class="v-btn v-btn-danger v-btn-sm fb-delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
+      </div>
+    </div>
+
+    <!-- Sample card: 4 star -->
+    <div class="feedback-card" data-rating="4">
+      <div class="fb-card-head">
+        <div class="fb-avatar">D</div>
+        <div class="fb-meta">
+          <span class="fb-name">Divya S.</span>
+          <span class="fb-date">18 Feb 2026</span>
+        </div>
+        <div class="fb-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-regular fa-star"></i>
+        </div>
+      </div>
+      <div class="fb-product">Sacred Thread Mala</div>
+      <p class="fb-message">"The fabric quality alone justifies the price. Six months of regular wear and it still looks new."</p>
+      <div class="fb-actions">
+        <span class="v-badge green">Verified Purchase</span>
+        <button class="v-btn v-btn-danger v-btn-sm fb-delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
+      </div>
+    </div>
+
+    <!-- Sample card: 3 star -->
+    <div class="feedback-card" data-rating="3">
+      <div class="fb-card-head">
+        <div class="fb-avatar">R</div>
+        <div class="fb-meta">
+          <span class="fb-name">Rahul M.</span>
+          <span class="fb-date">25 Feb 2026</span>
+        </div>
+        <div class="fb-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
+          <i class="fa-regular fa-star"></i>
+        </div>
+      </div>
+      <div class="fb-product">The Essential Crew Tee</div>
+      <p class="fb-message">"Good quality but the sizing runs a bit small. Would recommend going one size up. Overall decent product."</p>
+      <div class="fb-actions">
+        <span class="v-badge muted">Unverified</span>
+        <button class="v-btn v-btn-danger v-btn-sm fb-delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
+      </div>
+    </div>
+
+    <!-- Sample card: 5 star -->
+    <div class="feedback-card" data-rating="5">
+      <div class="fb-card-head">
+        <div class="fb-avatar">P</div>
+        <div class="fb-meta">
+          <span class="fb-name">Priya T.</span>
+          <span class="fb-date">01 Mar 2026</span>
+        </div>
+        <div class="fb-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+        </div>
+      </div>
+      <div class="fb-product">Indigo Trail Jacket</div>
+      <p class="fb-message">"Absolutely love this jacket. The indigo colour is even more beautiful in person. Fast delivery too!"</p>
+      <div class="fb-actions">
+        <span class="v-badge green">Verified Purchase</span>
+        <button class="v-btn v-btn-danger v-btn-sm fb-delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
+      </div>
+    </div>
+
+    <!-- Sample card: 2 star -->
+    <div class="feedback-card" data-rating="2">
+      <div class="fb-card-head">
+        <div class="fb-avatar">S</div>
+        <div class="fb-meta">
+          <span class="fb-name">Suresh K.</span>
+          <span class="fb-date">05 Mar 2026</span>
+        </div>
+        <div class="fb-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+          <i class="fa-regular fa-star"></i>
+        </div>
+      </div>
+      <div class="fb-product">The Ivory Weave Shirt</div>
+      <p class="fb-message">"Colour faded after first wash. Expected better quality for this price point. Disappointed."</p>
+      <div class="fb-actions">
+        <span class="v-badge red">Critical</span>
+        <button class="v-btn v-btn-danger v-btn-sm fb-delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Empty state (shown when filter has no results) -->
+  <div id="feedbackEmpty" style="display:none;text-align:center;padding:60px 20px;color:var(--muted-dim);">
+    <i class="fa-regular fa-star" style="font-size:36px;color:var(--muted-dim);display:block;margin-bottom:16px;"></i>
+    No feedbacks found for this filter.
+  </div>
+
+  <!-- Note banner -->
+  <div style="margin-top:28px;padding:16px 20px;border:1px solid var(--line-strong);background:rgba(201,123,74,.06);display:flex;align-items:center;gap:12px;">
+    <i class="fa-solid fa-circle-info" style="color:var(--gold-light);font-size:16px;flex-shrink:0;"></i>
+    <span style="font-size:13px;color:var(--muted);">
+      The cards above are UI placeholders. Connect the <code style="background:var(--surface);padding:2px 6px;color:var(--gold-light);">/Admin/Feedbacks</code> backend route to populate real data via Thymeleaf.
+    </span>
+  </div>
+
+  <script>
+    // Filter by star rating
+    function filterFeedback(rating, btn) {
+      document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
+      btn.classList.add('active');
+
+      var cards = document.querySelectorAll('.feedback-card');
+      var visible = 0;
+      cards.forEach(function(card) {
+        var r = parseInt(card.dataset.rating);
+        var show = rating === 'all'
+          || (rating === 'low' && r <= 2)
+          || (rating !== 'all' && rating !== 'low' && r === parseInt(rating));
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      document.getElementById('feedbackEmpty').style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    // Delete card (frontend only)
+    document.querySelectorAll('.fb-delete-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (confirm('Remove this feedback?')) {
+          btn.closest('.feedback-card').remove();
+        }
+      });
+    });
+  </script>
+
+</main>
+</body>
+</html>

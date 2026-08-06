@@ -1,0 +1,163 @@
+<html th:replace="~{Admin/Adminbase::Layout(~{::main})}">
+<body>
+<main>
+
+  <div class="admin-page-head">
+    <div>
+      <div class="eyebrow">Catalogue</div>
+      <h1>Add New Product</h1>
+      <p>Create a new listing for the Viasta store.</p>
+    </div>
+    <a th:href="@{/Admin/ManageProduct}" class="v-btn v-btn-outline">
+      <i class="fa-solid fa-arrow-left"></i> Back to Products
+    </a>
+  </div>
+
+  <div class="admin-form-card">
+    <form method="post" enctype="multipart/form-data" th:object="${dto}">
+
+      <!-- Product Details -->
+      <div class="admin-form-section">
+        <div class="admin-form-section-title">Product Details</div>
+        <div class="form-row-2">
+          <div class="v-form-group">
+            <label>Product Name</label>
+            <input type="text" name="productName" placeholder="e.g. Indigo Trail Jacket" required>
+          </div>
+          <div class="v-form-group">
+            <label>Brand Name</label>
+            <input type="text" name="brandName" placeholder="e.g. Viasta">
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="v-form-group">
+            <label>Category</label>
+            <select name="category" required>
+              <option selected disabled>Select Category</option>
+              <option th:each="cate : ${categories}" th:value="${cate.id}" th:text="${cate.categoryName}"></option>
+            </select>
+          </div>
+          <div class="v-form-group">
+            <label>Gender</label>
+            <select name="gender" required>
+              <option selected disabled>Select Gender</option>
+              <option>Mens</option>
+              <option>Womens</option>
+              <option>Kids</option>
+              <option>Unisex</option>
+            </select>
+          </div>
+        </div>
+        <div class="v-form-group">
+          <label>Product Description</label>
+          <textarea name="productDescription" placeholder="Describe the product — fabric, fit, occasion…" required></textarea>
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="admin-form-section">
+        <div class="admin-form-section-title">Pricing</div>
+        <div class="form-row-4">
+          <div class="v-form-group">
+            <label>Cost Price (₹)</label>
+            <input type="number" step="0.01" name="costPrice" placeholder="0.00" required>
+          </div>
+          <div class="v-form-group">
+            <label>Selling Price (₹)</label>
+            <input type="number" step="0.01" name="sellingPrice" id="sellingPrice" placeholder="0.00" required>
+          </div>
+          <div class="v-form-group">
+            <label>Discount (%)</label>
+            <input type="number" name="discount" id="discount" placeholder="0">
+          </div>
+          <div class="v-form-group">
+            <label>Final Price (₹)</label>
+            <input type="number" step="0.01" id="finalPrice" placeholder="0.00" readonly style="opacity:.7;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Variants -->
+      <div class="admin-form-section">
+        <div class="admin-form-section-title">Variants</div>
+        <div class="form-row-2">
+          <div class="v-form-group">
+            <label>Available Colors</label>
+            <input type="text" name="colors" placeholder="Black, White, Indigo" required>
+          </div>
+          <div class="v-form-group">
+            <label>Available Sizes</label>
+            <input type="text" name="sizes" placeholder="S, M, L, XL, XXL" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory & Shipping -->
+      <div class="admin-form-section">
+        <div class="admin-form-section-title">Inventory &amp; Shipping</div>
+        <div class="form-row-3">
+          <div class="v-form-group">
+            <label>Quantity</label>
+            <input type="number" name="quantity" placeholder="0" required>
+          </div>
+          <div class="v-form-group">
+            <label>Shipping Charge (₹)</label>
+            <input type="number" step="0.01" name="shippingCharge" placeholder="0.00">
+          </div>
+          <div class="v-form-group">
+            <label>Delivery Time</label>
+            <input type="text" name="deliveryTime" placeholder="3–5 Days">
+          </div>
+        </div>
+      </div>
+
+      <!-- Images -->
+      <div class="admin-form-section">
+        <div class="admin-form-section-title">Product Images</div>
+        <div class="v-form-group">
+          <label>Upload Images</label>
+          <input type="file" name="images" multiple required accept=".png,.jpg,.jpeg,.webp">
+          <div class="hint">You can select multiple images. Accepted: PNG, JPG, WEBP.</div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="admin-form-section">
+        <div class="admin-form-section-title">Settings</div>
+        <div class="form-row-2">
+          <div class="v-switch-row">
+            <input type="checkbox" name="visibility" id="visibility" checked>
+            <label for="visibility">Product Visible on Store</label>
+          </div>
+          <div class="v-switch-row">
+            <input type="checkbox" name="returnPolicy" id="returnPolicy">
+            <label for="returnPolicy">Return Policy Available</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;justify-content:flex-end;gap:12px;padding-top:8px;">
+        <button type="reset" class="v-btn v-btn-outline">Reset</button>
+        <button type="submit" class="v-btn v-btn-gold"><i class="fa-solid fa-floppy-disk"></i> Save Product</button>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    var discount = document.getElementById('discount');
+    var sellingPrice = document.getElementById('sellingPrice');
+    var finalPrice = document.getElementById('finalPrice');
+    function calcFinal() {
+      var sp = parseFloat(sellingPrice.value) || 0;
+      var d = parseFloat(discount.value) || 0;
+      finalPrice.value = (sp - sp * d / 100).toFixed(2);
+    }
+    discount.addEventListener('input', calcFinal);
+    sellingPrice.addEventListener('input', calcFinal);
+  </script>
+
+</main>
+</body>
+</html>

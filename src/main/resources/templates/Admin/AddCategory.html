@@ -1,0 +1,81 @@
+<html th:replace="~{Admin/Adminbase::Layout(~{::main})}">
+<body>
+<main>
+
+  <div class="admin-page-head">
+    <div>
+      <div class="eyebrow">Catalogue</div>
+      <h1>Categories</h1>
+      <p>Add and manage product categories.</p>
+    </div>
+  </div>
+
+  <!-- Add Category Form -->
+  <div class="admin-form-card" style="margin-bottom:24px;">
+    <div class="admin-form-section-title">Add New Category</div>
+    <form action="AddCategory" method="post" th:object="${dto}">
+      <div class="form-row-3" style="align-items:flex-end;">
+        <div class="v-form-group" style="margin-bottom:0;">
+          <label>Category Name</label>
+          <input type="text" name="categoryName" placeholder="e.g. Ethnic Wear" required>
+        </div>
+        <div class="v-form-group" style="margin-bottom:0;">
+          <label>Icon Class (Font Awesome)</label>
+          <input type="text" name="categoryIcon" placeholder="e.g. fa-solid fa-om">
+        </div>
+        <div>
+          <button type="submit" class="v-btn v-btn-gold" style="width:100%;justify-content:center;">
+            <i class="fa-solid fa-plus"></i> Add Category
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Categories Table -->
+  <div class="admin-card">
+    <div class="admin-card-head"><h3>All Categories</h3></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Category Name</th>
+            <th>Icon</th>
+            <th>Visible</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="category, srno : ${categories}">
+            <td th:text="${srno.count}"></td>
+            <td class="strong" th:text="${category.categoryName}"></td>
+            <td>
+              <i th:class="${category.categoryIcon}" style="color:var(--gold-light);font-size:16px;"></i>
+              <span style="margin-left:6px;color:var(--muted-dim);font-size:12px;" th:text="${category.categoryIcon}"></span>
+            </td>
+            <td>
+              <span class="v-badge green" th:if="${category.isVisible}">Visible</span>
+              <span class="v-badge muted" th:unless="${category.isVisible}">Hidden</span>
+            </td>
+            <td>
+              <a th:href="@{'/Admin/EditCategory/' + ${category.id}}" class="v-btn v-btn-outline v-btn-sm">Edit</a>
+              <a th:href="@{'/Admin/ToggleCategoryVisibility/' + ${category.id}}"
+                 class="v-btn v-btn-sm" style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);color:#fff;">
+                <span th:text="${category.isVisible} ? 'Hide' : 'Show'"></span>
+              </a>
+              <a th:href="@{'/Admin/DeleteCategory/' + ${category.id}}" class="v-btn v-btn-danger v-btn-sm"
+                 onclick="return confirm('Delete this category?')">Delete</a>
+            </td>
+          </tr>
+          <tr th:if="${categories == null or categories.size() == 0}">
+            <td colspan="5" style="text-align:center;color:var(--muted-dim);padding:30px;">No categories yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

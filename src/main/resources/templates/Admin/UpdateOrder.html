@@ -1,0 +1,146 @@
+<html th:replace="~{Admin/Adminbase::Layout(~{::main})}">
+<body>
+<main>
+
+  <div class="admin-page-head">
+    <div>
+      <div class="eyebrow">Commerce</div>
+      <h1>Update Order</h1>
+      <p th:text="'Order ID: ' + ${order.orderId}">Order details</p>
+    </div>
+    <a href="/Admin/ManageOrders" class="v-btn v-btn-outline v-btn-sm">
+      <i class="fa-solid fa-arrow-left"></i> Back to Orders
+    </a>
+  </div>
+
+  <div class="admin-grid-2" style="gap:24px;">
+
+    <!-- Left: Order Details -->
+    <div class="admin-card">
+      <div class="admin-card-head">
+        <h3><i class="fa-solid fa-receipt" style="color:var(--gold);margin-right:8px;"></i>Order Details</h3>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--line);">
+          <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;">Order ID</span>
+          <span style="color:var(--ivory);font-weight:600;" th:text="${order.orderId}"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--line);">
+          <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;">Product</span>
+          <span style="color:var(--ivory);" th:text="${order.productName}"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--line);" th:if="${order.size != null and order.size != ''}">
+          <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;">Size</span>
+          <span style="color:var(--ivory);" th:text="${order.size}"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--line);" th:if="${order.color != null and order.color != ''}">
+          <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;">Colour</span>
+          <span style="color:var(--ivory);" th:text="${order.color}"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--line);">
+          <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;">Quantity</span>
+          <span style="color:var(--ivory);" th:text="${order.quantity}"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--line);">
+          <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;">Item Price</span>
+          <span style="color:var(--gold-light);font-weight:700;" th:text="'₹' + ${order.finalprice}"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--line);">
+          <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;">Shipping</span>
+          <span style="color:var(--ivory);" th:text="${order.shippingCharge == 0 ? 'Free' : '₹' + order.shippingCharge}"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;">Total Amount</span>
+          <span style="color:var(--gold-light);font-weight:700;font-size:16px;" th:text="'₹' + ${order.totalAmount}"></span>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap;">
+        <div>
+          <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;display:block;margin-bottom:6px;">Order Status</span>
+          <span class="v-badge gold"  th:if="${order.orderStatus.name() == 'Processing'}">Processing</span>
+          <span class="v-badge muted" th:if="${order.orderStatus.name() == 'Confirmed'}">Confirmed</span>
+          <span class="v-badge muted" th:if="${order.orderStatus.name() == 'Shipped'}">Shipped</span>
+          <span class="v-badge gold"  th:if="${order.orderStatus.name() == 'Out_For_Delivery'}">Out for Delivery</span>
+          <span class="v-badge green" th:if="${order.orderStatus.name() == 'Delivered'}">Delivered</span>
+          <span class="v-badge red"   th:if="${order.orderStatus.name() == 'Cancelled'}">Cancelled</span>
+        </div>
+        <div style="margin-left:20px;">
+          <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;display:block;margin-bottom:6px;">Payment</span>
+          <span class="v-badge gold"  th:if="${order.paymentStatus.name() == 'Pending'}">Pending</span>
+          <span class="v-badge green" th:if="${order.paymentStatus.name() == 'Success'}">Paid</span>
+          <span class="v-badge muted" th:if="${order.paymentStatus.name() == 'Refunded'}">Refunded</span>
+          <span class="v-badge red"   th:if="${order.paymentStatus.name() == 'Cancelled'}">Cancelled</span>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line);">
+        <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;display:block;margin-bottom:4px;">Ordered On</span>
+        <span style="color:var(--muted);" th:text="${order.orderedAt != null ? #temporals.format(order.orderedAt, 'dd MMM yyyy, hh:mm a') : '—'}"></span>
+      </div>
+    </div>
+
+    <!-- Right: Customer + Update Form -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- Customer Info -->
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <h3><i class="fa-solid fa-user" style="color:var(--gold);margin-right:8px;"></i>Customer Info</h3>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;display:block;margin-bottom:3px;">Name</span>
+            <span style="color:var(--ivory);" th:text="${order.customerName}"></span>
+          </div>
+          <div>
+            <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;display:block;margin-bottom:3px;">Contact</span>
+            <span style="color:var(--ivory);" th:text="${order.contactNo}"></span>
+          </div>
+          <div>
+            <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;display:block;margin-bottom:3px;">Shipping Address</span>
+            <span style="color:var(--ivory);" th:text="${order.shippingAddress}"></span>
+          </div>
+          <div>
+            <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-dim);font-weight:700;display:block;margin-bottom:3px;">Pincode</span>
+            <span style="color:var(--ivory);" th:text="${order.pincode}"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Update Status Form -->
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <h3><i class="fa-solid fa-truck-fast" style="color:var(--gold);margin-right:8px;"></i>Update Delivery Status</h3>
+        </div>
+
+        <form th:action="@{'/Admin/UpdateOrderStatus/' + ${order.id}}" method="post">
+          <div class="v-form-group">
+            <label>Order Status</label>
+            <select name="orderStatus">
+              <option value="Processing"       th:selected="${order.orderStatus.name() == 'Processing'}">Processing</option>
+              <option value="Confirmed"        th:selected="${order.orderStatus.name() == 'Confirmed'}">Confirmed</option>
+              <option value="Shipped"          th:selected="${order.orderStatus.name() == 'Shipped'}">Shipped</option>
+              <option value="Out_For_Delivery" th:selected="${order.orderStatus.name() == 'Out_For_Delivery'}">Out for Delivery</option>
+              <option value="Delivered"        th:selected="${order.orderStatus.name() == 'Delivered'}">Delivered</option>
+              <option value="Cancelled"        th:selected="${order.orderStatus.name() == 'Cancelled'}">Cancelled</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:8px;">
+            <button type="submit" class="v-btn v-btn-gold" style="flex:1;">
+              <i class="fa-solid fa-check"></i> Save Status
+            </button>
+            <a href="/Admin/ManageOrders" class="v-btn v-btn-outline">
+              <i class="fa-solid fa-xmark"></i> Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

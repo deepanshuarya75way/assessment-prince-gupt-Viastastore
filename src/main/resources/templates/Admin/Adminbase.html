@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" th:fragment="Layout(content)">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Viasta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="admin-topbar">
+    <div class="admin-topbar-row">
+      <div class="admin-brand">
+        <button class="admin-mobile-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <a href="/Admin/Dashboard" class="logo">Viasta<span>.</span></a>
+        <span class="tag">Admin</span>
+      </div>
+      <div class="admin-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search orders, products, users…">
+      </div>
+      <div class="admin-topbar-actions">
+        <button class="admin-icon-btn" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span class="dot"></span>
+        </button>
+        <div class="admin-profile">
+          <div class="avatar"><i class="fa-solid fa-user"></i></div>
+          <div class="who">
+            <b th:text="${session.LoggedInAdmin != null ? session.LoggedInAdmin.name : 'Admin'}">Admin</b>
+            <span>Administrator</span>
+          </div>
+        </div>
+        <a href="/Admin/logout" class="admin-logout-btn" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-main">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-nav-group">
+        <h5>Overview</h5>
+        <a href="/Admin/Dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+      </div>
+      <div class="admin-nav-group">
+        <h5>Catalogue</h5>
+        <a href="/Admin/AddCategory"><i class="fa-solid fa-tags"></i> Categories</a>
+        <a href="/Admin/AddProduct"><i class="fa-solid fa-circle-plus"></i> Add Product</a>
+        <a href="/Admin/ManageProduct"><i class="fa-solid fa-box-open"></i> Manage Products</a>
+      </div>
+      <div class="admin-nav-group">
+        <h5>Commerce</h5>
+        <a href="/Admin/ManageOrders"><i class="fa-solid fa-truck-fast"></i> Orders</a>
+        <a href="/Admin/ManageUsers"><i class="fa-solid fa-users"></i> Users</a>
+        <a href="/Admin/ViewEnquiry"><i class="fa-solid fa-envelope-open-text"></i> Enquiries</a>
+        <a href="/Admin/Feedbacks"><i class="fa-solid fa-star-half-stroke"></i> Feedbacks <span class="nav-soon">Soon</span></a>
+      </div>
+      <div class="admin-nav-group">
+        <h5>Account</h5>
+        <a href="/Admin/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </div>
+    </aside>
+
+    <!-- Page Content -->
+    <div class="admin-content">
+      <div th:replace="${content}"></div>
+    </div>
+
+  </div>
+
+  <!-- Sidebar overlay for mobile -->
+  <div class="admin-sidebar-overlay" id="sidebarOverlay"></div>
+
+  <input type="hidden" id="msg" th:if="${msg}" th:value="${msg}">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Flash message
+    var msgEl = document.getElementById('msg');
+    if (msgEl && msgEl.value) alert(msgEl.value);
+
+    // Sidebar toggle
+    var toggle = document.getElementById('sidebarToggle');
+    var sidebar = document.getElementById('adminSidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+      });
+      overlay.addEventListener('click', function () {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+      });
+    }
+
+    // Active nav link
+    document.addEventListener('DOMContentLoaded', function () {
+      var path = window.location.pathname;
+      document.querySelectorAll('.admin-nav-group a').forEach(function (link) {
+        if (link.getAttribute('href') && path.startsWith(link.getAttribute('href'))) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

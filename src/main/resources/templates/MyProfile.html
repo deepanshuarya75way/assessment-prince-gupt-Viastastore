@@ -1,0 +1,154 @@
+<html th:replace="~{base::Layout(~{::main})}">
+<body>
+<main>
+
+  <section class="page-banner">
+    <div class="eyebrow" style="justify-content:center;">Your Account</div>
+    <h1>My <em>Profile</em></h1>
+    <p>Manage your personal details and account settings.</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> &nbsp;/&nbsp; My Profile
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="user-page-layout">
+
+      <!-- Sidebar nav -->
+      <aside class="user-sidebar">
+        <div class="user-sidebar-avatar">
+          <div class="user-avatar-circle">
+            <span th:text="${#strings.substring(session.LoggedInUser.name, 0, 1).toUpperCase()}">U</span>
+          </div>
+          <div class="user-sidebar-name" th:text="${session.LoggedInUser.name}">User Name</div>
+          <div class="user-sidebar-email" th:text="${session.LoggedInUser.email}">user@email.com</div>
+        </div>
+        <nav class="user-sidebar-nav">
+          <a href="/MyProfile" class="active"><i class="fa-solid fa-user"></i> My Profile</a>
+          <a href="/SavedAddress"><i class="fa-solid fa-location-dot"></i> Saved Address</a>
+          <a href="/MyOrders"><i class="fa-solid fa-bag-shopping"></i> My Orders</a>
+          <a href="/userLogout" class="user-nav-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <div class="user-content">
+
+        <div class="user-content-head">
+          <div class="eyebrow">Account</div>
+          <h2>My Profile</h2>
+        </div>
+
+        <!-- Flash message -->
+        <div class="user-alert user-alert-success" th:if="${msg}" th:text="${msg}"></div>
+
+        <!-- Profile info card -->
+        <div class="user-card">
+          <div class="user-card-head">
+            <h3>Personal Information</h3>
+            <button class="user-edit-btn" id="editProfileBtn">
+              <i class="fa-solid fa-pen"></i> Edit
+            </button>
+          </div>
+
+          <!-- View mode -->
+          <div id="profileView">
+            <div class="user-info-grid">
+              <div class="user-info-item">
+                <span class="user-info-label">Full Name</span>
+                <span class="user-info-value" th:text="${session.LoggedInUser.name}">—</span>
+              </div>
+              <div class="user-info-item">
+                <span class="user-info-label">Email Address</span>
+                <span class="user-info-value" th:text="${session.LoggedInUser.email}">—</span>
+              </div>
+              <div class="user-info-item">
+                <span class="user-info-label">Contact Number</span>
+                <span class="user-info-value" th:text="${session.LoggedInUser.contactNo}">—</span>
+              </div>
+              <div class="user-info-item">
+                <span class="user-info-label">Gender</span>
+                <span class="user-info-value" th:text="${session.LoggedInUser.gender}">—</span>
+              </div>
+              <div class="user-info-item">
+                <span class="user-info-label">Account Status</span>
+                <span class="user-status-badge" th:text="${session.LoggedInUser.status}">—</span>
+              </div>
+              <div class="user-info-item">
+                <span class="user-info-label">Member Since</span>
+                <span class="user-info-value" th:text="${#temporals.format(session.LoggedInUser.registerAt, 'dd MMM yyyy')}">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit mode (hidden by default) -->
+          <form id="profileEditForm" action="/UpdateProfile" method="post" style="display:none;">
+            <div class="user-form-grid">
+              <div class="user-form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" th:value="${session.LoggedInUser.name}" required>
+              </div>
+              <div class="user-form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" th:value="${session.LoggedInUser.email}" required>
+              </div>
+              <div class="user-form-group">
+                <label>Contact Number</label>
+                <input type="text" name="contactNo" th:value="${session.LoggedInUser.contactNo}" required>
+              </div>
+              <div class="user-form-group">
+                <label>Gender</label>
+                <select name="gender">
+                  <option th:value="'Male'"   th:selected="${session.LoggedInUser.gender == 'Male'}">Male</option>
+                  <option th:value="'Female'" th:selected="${session.LoggedInUser.gender == 'Female'}">Female</option>
+                  <option th:value="'Other'"  th:selected="${session.LoggedInUser.gender == 'Other'}">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="user-form-actions">
+              <button type="submit" class="user-btn user-btn-gold">Save Changes</button>
+              <button type="button" class="user-btn user-btn-outline" id="cancelEditBtn">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Change Password card -->
+        <div class="user-card" style="margin-top:20px;">
+          <div class="user-card-head">
+            <h3>Change Password</h3>
+            <button class="user-edit-btn" id="togglePasswordBtn">
+              <i class="fa-solid fa-lock"></i> Change
+            </button>
+          </div>
+          <div id="passwordForm" style="display:none;">
+            <form action="/ChangePassword" method="post">
+              <div class="user-form-grid">
+                <div class="user-form-group">
+                  <label>Current Password</label>
+                  <input type="password" name="currentPassword" placeholder="Enter current password" required>
+                </div>
+                <div class="user-form-group">
+                  <label>New Password</label>
+                  <input type="password" name="newPassword" placeholder="Enter new password" required>
+                </div>
+                <div class="user-form-group">
+                  <label>Confirm New Password</label>
+                  <input type="password" name="confirmPassword" placeholder="Confirm new password" required>
+                </div>
+              </div>
+              <div class="user-form-actions">
+                <button type="submit" class="user-btn user-btn-gold">Update Password</button>
+                <button type="button" class="user-btn user-btn-outline" id="cancelPasswordBtn">Cancel</button>
+              </div>
+            </form>
+          </div>
+          <p style="color:var(--muted);font-size:13px;" id="passwordHint">Keep your account secure with a strong password.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

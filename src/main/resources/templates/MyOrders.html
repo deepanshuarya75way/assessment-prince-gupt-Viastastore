@@ -1,0 +1,125 @@
+<html th:replace="~{base::Layout(~{::main})}">
+<body>
+<main>
+
+  <section class="page-banner">
+    <div class="eyebrow" style="justify-content:center;">Your Account</div>
+    <h1>My <em>Orders</em></h1>
+    <p>Track and manage all your Viasta purchases.</p>
+    <div class="breadcrumb">
+      <a href="/">Home</a> &nbsp;/&nbsp; My Orders
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="user-page-layout">
+
+      <!-- Sidebar nav -->
+      <aside class="user-sidebar">
+        <div class="user-sidebar-avatar">
+          <div class="user-avatar-circle">
+            <span th:text="${#strings.substring(session.LoggedInUser.name, 0, 1).toUpperCase()}">U</span>
+          </div>
+          <div class="user-sidebar-name" th:text="${session.LoggedInUser.name}">User Name</div>
+          <div class="user-sidebar-email" th:text="${session.LoggedInUser.email}">user@email.com</div>
+        </div>
+        <nav class="user-sidebar-nav">
+          <a href="/MyProfile"><i class="fa-solid fa-user"></i> My Profile</a>
+          <a href="/SavedAddress"><i class="fa-solid fa-location-dot"></i> Saved Address</a>
+          <a href="/MyOrders" class="active"><i class="fa-solid fa-bag-shopping"></i> My Orders</a>
+          <a href="/userLogout" class="user-nav-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <div class="user-content">
+
+        <div class="user-content-head">
+          <div class="eyebrow">Account</div>
+          <h2>My Orders</h2>
+        </div>
+
+        <!-- Filter chips -->
+        <div class="user-order-filters">
+          <button class="user-order-chip active" data-filter="all">All Orders</button>
+          <button class="user-order-chip" data-filter="Processing">Processing</button>
+          <button class="user-order-chip" data-filter="Confirmed">Confirmed</button>
+          <button class="user-order-chip" data-filter="Delivered">Delivered</button>
+          <button class="user-order-chip" data-filter="Cancelled">Cancelled</button>
+        </div>
+
+        <!-- Orders list — Thymeleaf renders when backend wires ${orders} -->
+        <div id="ordersList">
+
+          <div th:if="${orders != null and !orders.isEmpty()}">
+            <div class="order-card"
+                 th:each="order : ${orders}"
+                 th:data-status="${order.orderStatus.name()}">
+
+              <div class="order-card-head">
+                <div class="order-meta">
+                  <span class="order-id">Order #<span th:text="${order.orderId}"></span></span>
+                  <span class="order-date" th:text="${#temporals.format(order.orderedAt, 'dd MMM yyyy')}"></span>
+                </div>
+                <div class="order-status-wrap">
+                  <span class="order-status-badge order-status-pending"   th:if="${order.orderStatus.name() == 'Processing'}">Processing</span>
+                  <span class="order-status-badge order-status-confirmed" th:if="${order.orderStatus.name() == 'Confirmed'}">Confirmed</span>
+                  <span class="order-status-badge order-status-confirmed" th:if="${order.orderStatus.name() == 'Shipped'}">Shipped</span>
+                  <span class="order-status-badge order-status-confirmed" th:if="${order.orderStatus.name() == 'Out_For_Delivery'}">Out for Delivery</span>
+                  <span class="order-status-badge order-status-delivered" th:if="${order.orderStatus.name() == 'Delivered'}">Delivered</span>
+                  <span class="order-status-badge order-status-cancelled" th:if="${order.orderStatus.name() == 'Cancelled'}">Cancelled</span>
+                </div>
+              </div>
+
+              <div class="order-card-body">
+                <div class="order-product-row">
+                  <img th:src="@{'/ProductImages/' + ${order.product.productImages.get(0)}}"
+                       th:alt="${order.productName}"
+                       class="order-product-img">
+                  <div class="order-product-info">
+                    <h4 th:text="${order.productName}"></h4>
+                    <span class="order-product-cat" th:text="${order.product.category != null ? order.product.category.categoryName : ''}"></span>
+                    <div class="order-product-meta">
+                      <span th:if="${order.size != null and !order.size.isEmpty()}">Size: <b th:text="${order.size}"></b></span>
+                      <span th:if="${order.color != null and !order.color.isEmpty()}">Colour: <b th:text="${order.color}"></b></span>
+                      <span>Qty: <b th:text="${order.quantity}"></b></span>
+                    </div>
+                  </div>
+                  <div class="order-product-price">
+                    <span class="order-total">₹<span th:text="${order.totalAmount}"></span></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="order-card-foot">
+                <a th:href="@{'/Product/' + ${order.product.id}}" class="user-btn user-btn-outline user-btn-sm">
+                  View Product
+                </a>
+                <a th:href="@{'/TrackOrder/' + ${#strings.substringBefore(order.orderId, '-' + order.product.id)}}"
+                   class="user-btn user-btn-outline user-btn-sm">
+                  <i class="fa-solid fa-truck-fast"></i> Track
+                </a>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div class="user-empty-state" th:if="${orders == null or orders.isEmpty()}">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <p>No orders yet.</p>
+            <p style="font-size:13px;color:var(--muted-dim);">When you place an order it will appear here.</p>
+            <a href="/shop" class="user-btn user-btn-gold" style="margin-top:16px;">
+              <i class="fa-solid fa-shirt"></i> Start Shopping
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

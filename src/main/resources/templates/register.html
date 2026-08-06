@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register - Viasta | User Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<header class="portal-header">
+  <div class="portal-header-row">
+    <a href="/" class="portal-back"><i class="fa-solid fa-arrow-left"></i> Back to Store</a>
+    <span class="portal-brand">Viasta Clothing Store</span>
+  </div>
+</header>
+
+<main>
+  <section class="auth-section">
+    <div class="wrap">
+      <div class="portal-tabs">
+        <a href="/login" class="portal-tab">Sign In</a>
+        <a href="/register" class="portal-tab active">Register</a>
+      </div>
+      <div class="auth-wrap">
+
+        <div class="auth-side glass-liquid">
+          <div class="eyebrow">Viasta Clothing Store</div>
+          <blockquote>"We make the kind of clothes we'd actually want to wear again next year."</blockquote>
+          <div class="auth-perks">
+            <div class="auth-perk">
+              <i class="fa-solid fa-star"></i>
+              Exclusive member-only offers
+            </div>
+            <div class="auth-perk">
+              <i class="fa-solid fa-truck-fast"></i>
+              Track orders in real time
+            </div>
+            <div class="auth-perk">
+              <i class="fa-solid fa-heart"></i>
+              Save your wishlist across devices
+            </div>
+            <div class="auth-perk">
+              <i class="fa-solid fa-clock"></i>
+              Early access to new collections
+            </div>
+          </div>
+          <a href="/" class="auth-back-home">← Back to Home</a>
+        </div>
+
+        <div class="auth-form-side">
+          <div class="eyebrow">Viasta Clothing Store</div>
+          <h1>Join the Circle</h1>
+          <p class="sub">Takes under a minute — no spam, just early access when it matters.</p>
+
+          <form action="/register" method="post" th:object="${dto}">
+            <div class="form-group">
+              <label>Full Name</label>
+              <div class="input-icon">
+                <i class="fa-solid fa-user"></i>
+                <input th:field="${dto.name}" type="text" name="fullName" required placeholder="Your full name" autocomplete="name">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Contact Number</label>
+              <div class="input-icon">
+                <i class="fa-solid fa-phone"></i>
+                <input th:field="${dto.contactNo}" type="tel" name="contactNumber" required placeholder="+91 98765 43210" autocomplete="tel" pattern="[0-9+ ]{7,15}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <div class="input-icon">
+                <i class="fa-solid fa-envelope"></i>
+                <input th:field="${dto.email}" type="email" name="email" required placeholder="you@example.com" autocomplete="email">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Gender</label>
+              <div th:field="${dto.gender}" class="gender-group">
+                <label><input type="radio" name="gender" value="MALE"> Male</label>
+                <label><input type="radio" name="gender" value="FEMALE"> Female</label>
+                <label><input type="radio" name="gender" value="OTHER"> Other</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <div class="pass-wrap">
+                <i class="fa-solid fa-lock"></i>
+                <input th:field="${dto.password}" type="password" name="password" required placeholder="••••••••" id="regPass" autocomplete="new-password">
+                <button type="button" class="pass-toggle" aria-label="Show password"><i class="fa-solid fa-eye"></i></button>
+              </div>
+            </div>
+            <div class="auth-row-between" style="justify-content:flex-start;">
+              <label class="auth-check"><input type="checkbox" name="agreeTerms" value="true" required> I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</label>
+            </div>
+            <button class="btn btn-gold full-btn" type="submit">Create My Account</button>
+          </form>
+
+          <div class="auth-switch">Already have an account? <a href="/login">Sign in here</a></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="portal-footer">
+  <div class="wrap">
+    <span>© 2026 Viasta Clothing Store. All rights reserved. &nbsp;·&nbsp; <a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a></span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script type="text/javascript">
+    	var msg = "[[${msg}]]"
+    	if(msg!=""){
+    		alert(msg);
+    	}
+    </script>
+</body>
+</html>

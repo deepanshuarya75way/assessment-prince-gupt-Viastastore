@@ -1,0 +1,69 @@
+<html th:replace="~{Admin/Adminbase::Layout(~{::main})}">
+<body>
+<main>
+
+  <div class="admin-page-head">
+    <div>
+      <div class="eyebrow">Catalogue</div>
+      <h1>Manage Products</h1>
+      <p>View and manage all product listings.</p>
+    </div>
+    <a th:href="@{/Admin/AddProduct}" class="v-btn v-btn-gold">
+      <i class="fa-solid fa-plus"></i> Add Product
+    </a>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product Name</th>
+            <th>Images</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Price (₹)</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="product, srno : ${products}">
+            <td th:text="${srno.count}"></td>
+            <td class="strong" th:text="${product.productName}"></td>
+            <td>
+              <div class="thumb-row" th:if="${product.productImages != null}">
+                <img th:each="image : ${product.productImages}"
+                     th:src="@{'/ProductImages/' + ${image}}"
+                     alt="Product Image">
+              </div>
+            </td>
+            <td style="max-width:200px;white-space:normal;color:var(--muted);" th:text="${product.productDescription}"></td>
+            <td th:text="${product.category != null ? product.category.categoryName : '—'}"></td>
+            <td style="color:var(--gold-light);font-weight:700;" th:text="'₹' + ${product.sellingPrice}"></td>
+            <td>
+              <span class="v-badge green" th:if="${product.visibility}">Active</span>
+              <span class="v-badge muted" th:unless="${product.visibility}">Hidden</span>
+            </td>
+            <td>
+              <a th:href="@{'/Admin/EditProduct/' + ${product.id}}" class="v-btn v-btn-outline v-btn-sm">Edit</a>
+              <a th:href="@{'/Admin/ToggleProductVisibility/' + ${product.id}}"
+                 class="v-btn v-btn-sm" style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);color:#fff;">
+                <span th:text="${product.visibility} ? 'Hide' : 'Show'"></span>
+              </a>
+              <a th:href="@{'/Admin/DeleteProduct/' + ${product.id}}" class="v-btn v-btn-danger v-btn-sm"
+                 onclick="return confirm('Delete this product?')">Delete</a>
+            </td>
+          </tr>
+          <tr th:if="${products == null or products.size() == 0}">
+            <td colspan="8" style="text-align:center;color:var(--muted-dim);padding:40px;">No products found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

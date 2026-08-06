@@ -1,0 +1,57 @@
+<html th:replace="~{Admin/Adminbase::Layout(~{::main})}">
+<body>
+<main>
+
+  <div class="admin-page-head">
+    <div>
+      <div class="eyebrow">Commerce</div>
+      <h1>Enquiries</h1>
+      <p>All customer contact and support enquiries.</p>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Type</th>
+            <th>Message</th>
+            <th>Received</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="enquiry, srno : ${enquiries}">
+            <td th:text="${srno.count}"></td>
+            <td class="strong" th:text="${enquiry.name}"></td>
+            <td th:text="${enquiry.contactNo}"></td>
+            <td th:text="${enquiry.email}"></td>
+            <td th:text="${enquiry.address}"></td>
+            <td>
+              <span class="v-badge gold" th:text="${enquiry.enquiryType}"></span>
+            </td>
+            <td class="msg-cell" th:text="${enquiry.message}"></td>
+            <td th:text="${#temporals.format(enquiry.enquiryAt, 'dd MMM yyyy, hh:mm a')}"></td>
+            <td>
+              <a href="" class="v-btn v-btn-danger v-btn-sm">
+                <i class="fa-solid fa-trash"></i> Delete
+              </a>
+            </td>
+          </tr>
+          <tr th:if="${enquiries == null or enquiries.size() == 0}">
+            <td colspan="9" style="text-align:center;color:var(--muted-dim);padding:40px;">No enquiries found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>
